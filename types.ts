@@ -1,7 +1,7 @@
 
 export type Language = 'ar' | 'en';
 
-export type Page = 'about' | 'education' | 'skills' | 'volunteer' | 'hobbies' | 'goals' | 'gallery' | 'project' | 'evaluations';
+export type Page = 'about' | 'education' | 'skills' | 'volunteer' | 'hobbies' | 'goals' | 'gallery' | 'project' | 'evaluations' | 'game' | 'community';
 
 export interface Translatable {
   ar: string;
@@ -103,4 +103,13 @@ export interface Translations {
   image: Translatable;
   video: Translatable;
   pdf: Translatable;
+  shareYourAchievement: Translatable;
+  yourName: Translatable;
+  yourAchievement: Translatable;
+  yourNamePlaceholder: Translatable;
+  yourAchievementPlaceholder: Translatable;
+  submitAchievement: Translatable;
+  recentAchievements: Translatable;
+  noAchievementsYet: Translatable;
+  errorAllFieldsRequired: Translatable;
 }

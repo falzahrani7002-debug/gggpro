@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const IconWrapper: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (
@@ -61,6 +60,12 @@ export const DocumentIcon: React.FC<{ className?: string }> = ({ className }) =>
 export const LockIcon: React.FC<{ className?: string }> = ({ className }) => (
   <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></IconWrapper>
 );
+export const PuzzleIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></IconWrapper>
+);
+export const CommunityIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></IconWrapper>
+);
 
 // Hobby Icons
 export const FootballIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -72,4 +77,9 @@ export const FootballIcon: React.FC<{ className?: string }> = ({ className }) =>
   export const BookIcon: React.FC<{ className?: string }> = ({ className }) => (
     <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2zm0 0l7 1.5M5 4l7 1.5V20M12 5.5L19 4m0 0v16" /></IconWrapper>
   );
-  
+export const CodeIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></IconWrapper>
+);
+export const ChessIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 2C9.243 2 7 4.243 7 7c0 1.52.667 2.88 1.72 3.822L3 22h18l-5.72-11.178A4.957 4.957 0 0017 7c0-2.757-2.243-5-5-5zm0 3c.828 0 1.5.672 1.5 1.5S12.828 8 12 8s-1.5-.672-1.5-1.5S11.172 5 12 5zM9 12v2h6v-2H9z" /></IconWrapper>
+);
