@@ -66,6 +66,12 @@ export const PuzzleIcon: React.FC<{ className?: string }> = ({ className }) => (
 export const CommunityIcon: React.FC<{ className?: string }> = ({ className }) => (
     <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></IconWrapper>
 );
+export const GiftIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <IconWrapper className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 19.5v-8.25M21 11.25V8.25a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 8.25v3M21 11.25H3M12 21v-9.75M12 5.25v-1.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25c0-1.5 1.5-2.25 3-2.25S13.5 3.75 13.5 5.25" />
+  </IconWrapper>
+);
 
 // Hobby Icons
 export const FootballIcon: React.FC<{ className?: string }> = ({ className }) => (

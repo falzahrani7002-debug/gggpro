@@ -58,7 +58,7 @@ const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', classN
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setInputValue(e.target.value),
       onBlur: handleSave,
       onKeyDown: handleKeyDown,
-      className: `bg-teal-700 text-white p-1 rounded-md border-2 border-amber-500 w-full ${className}`
+      className: `bg-teal-700 text-white p-1 rounded-md border-2 border-cyan-500 w-full ${className}`
     };
 
     return as === 'textarea'
@@ -69,7 +69,7 @@ const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', classN
   return (
     <Tag
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsEditingThis(true); }}
-      className={`outline-dashed outline-1 outline-transparent hover:outline-amber-500/50 cursor-pointer hover:bg-amber-500/10 p-1 -m-1 rounded-sm transition-all duration-200 ${className}`}
+      className={`outline-dashed outline-1 outline-transparent hover:outline-cyan-500/50 cursor-pointer hover:bg-cyan-500/10 p-1 -m-1 rounded-sm transition-all duration-200 ${className}`}
       title="Click to edit"
     >
       {value || (lang === 'ar' ? 'أضف قيمة...' : 'Add value...')}

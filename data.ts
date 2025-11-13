@@ -7,8 +7,8 @@ export const initialData: PortfolioData = {
     school: "مدارس الأندلس – المنار",
     email: "f.alzahrani@gmail.com",
     about: {
-      ar: "طالب طموح في الصف الأول المتوسط، شغوف بالمعرفة ومحب للاستكشاف. أسعى دائمًا لتطوير مهاراتي الأكاديمية والشخصية، مع تركيز خاص على الرياضيات التي أجد فيها متعة وتحديًا، وكرة القدم التي تعلمني أهمية العمل الجماعي والمثابرة. أؤمن بأن التعلم رحلة مستمرة لا تتوقف عند حدود الفصل الدراسي، وهذا الملف هو مرآة لجهودي وإنجازاتي، وقصة شغفي نحو تحقيق أهدافي.",
-      en: "An ambitious first-intermediate grade student, passionate about knowledge and eager to explore. I am always striving to develop my academic and personal skills, with a special focus on mathematics, which I find both fun and challenging, and football, which teaches me the importance of teamwork and perseverance. I believe that learning is a continuous journey that doesn't stop at the classroom's borders, and this portfolio is a reflection of my efforts, my achievements, and the story of my passion towards achieving my goals."
+      ar: "طالب طموح في الصف الأول المتوسط، شغوف بالمعرفة ومحب للاستكشاف. أسعى دائمًا لتطوير مهاراتي الأكاديمية والشخصية، مع تركيز خاص على الرياضيات التي أجد فيها متعة وتحديًا، وكرة القدم التي تعلمني أهمية العمل الجماعي والمثابرة. أؤمن بأن التعلم رحلة مستمرة لا تتوقف عند حدود الفصل الدراسي، وهذا الملف هو مرآة لجهودي وإنجازاتي، وقصة شغفي نحو تحقيق أهدافي. كل يوم هو فرصة جديدة لأكون أفضل من الأمس، وبالعزيمة والإصرار، لا يوجد شيء اسمه مستحيل.",
+      en: "An ambitious first-intermediate grade student, passionate about knowledge and eager to explore. I am always striving to develop my academic and personal skills, with a special focus on mathematics, which I find both fun and challenging, and football, which teaches me the importance of teamwork and perseverance. I believe that learning is a continuous journey that doesn't stop at the classroom's borders, and this portfolio is a reflection of my efforts, my achievements, and the story of my passion towards achieving my goals. I believe that every day is a new opportunity to be better than I was yesterday, and with determination and persistence, nothing is impossible."
     }
   },
   education: [
@@ -20,9 +20,13 @@ export const initialData: PortfolioData = {
     { id: 'skill2', name: { ar: 'البرمجة (سكراتش)', en: 'Programming (Scratch)' }, level: 75 },
     { id: 'skill3', name: { ar: 'اللغة الإنجليزية', en: 'English Language' }, level: 85 },
     { id: 'skill4', name: { ar: 'مهارات العرض والتقديم', en: 'Presentation Skills' }, level: 80 },
+    { id: 'skill5', name: { ar: 'كرة القدم', en: 'Football' }, level: 99 },
+    { id: 'skill6', name: { ar: 'الشعر', en: 'Poetry' }, level: 90 },
   ],
   volunteerWork: [
     { id: 'vol1', organization: { ar: 'حملة تنظيف الشاطئ', en: 'Beach Cleanup Campaign' }, role: { ar: 'عضو فريق', en: 'Team Member' }, description: { ar: 'المشاركة في تنظيف شاطئ جدة ضمن مبادرة مدرسية للحفاظ على البيئة.', en: 'Participated in cleaning Jeddah beach as part of a school initiative to preserve the environment.' }, years: '2023' },
+    { id: 'vol2', organization: { ar: 'مبادرة إفطار صائم', en: 'Iftar Meal Initiative' }, role: { ar: 'متطوع توزيع', en: 'Distribution Volunteer' }, description: { ar: 'المساعدة في توزيع وجبات الإفطار على الصائمين في الحي خلال شهر رمضان.', en: 'Helped distribute Iftar meals to people in the neighborhood during Ramadan.' }, years: '2024' },
+    { id: 'vol3', organization: { ar: 'حملة تشجير الحي', en: 'Neighborhood Greening Campaign' }, role: { ar: 'مشارك', en: 'Participant' }, description: { ar: 'زراعة شتلات الأشجار في حديقة الحي للمساهمة في زيادة المساحات الخضراء.', en: 'Planted tree saplings in the local park to help increase green spaces.' }, years: '2024' },
   ],
   hobbies: [
     { id: 'hob1', name: { ar: 'كرة القدم', en: 'Football' }, icon: 'football' },
@@ -35,6 +39,8 @@ export const initialData: PortfolioData = {
     shortTerm: [
       { id: 'stg1', text: { ar: 'الحصول على معدل 98% في نهاية الفصل الدراسي', en: 'Achieve a 98% average at the end of the semester' }, type: 'short' },
       { id: 'stg2', text: { ar: 'الفوز في مسابقة الحساب الذهني على مستوى المدرسة', en: 'Win the school-level mental math competition' }, type: 'short' },
+      { id: 'stg3', text: { ar: 'الذهاب الى عمرة', en: 'Go to Umrah' }, type: 'short' },
+      { id: 'stg4', text: { ar: 'الذهاب الى الحج', en: 'Go to Hajj' }, type: 'short' },
     ],
     longTerm: [
       { id: 'ltg1', text: { ar: 'دراسة هندسة الحاسب الآلي في جامعة مرموقة', en: 'Study Computer Engineering at a prestigious university' }, type: 'long' },
@@ -56,8 +62,9 @@ export const initialData: PortfolioData = {
     imageUrl: 'https://picsum.photos/seed/bright-moon/1200/800'
   },
   evaluations: [
-    { id: 'eval1', author: 'الأستاذ أحمد', role: { ar: 'معلم الرياضيات', en: 'Math Teacher' }, comment: { ar: 'فيصل طالب متميز في الرياضيات، يمتلك قدرة فريدة على حل المسائل المعقدة بسرعة. أتمنى له كل التوفيق.', en: 'Faisal is an outstanding math student with a unique ability to solve complex problems quickly. I wish him all the best.' } },
+    { id: 'eval1', author: 'مدير المدرسة', role: { ar: 'مدير المدرسة', en: 'School Principal' }, comment: { ar: 'فيصل مثال للطالب المجتهد والخلوق. يجمع بين التفوق الدراسي والمشاركة الفاعلة في الأنشطة المدرسية. نتوقع له مستقبلاً باهراً.', en: 'Faisal is an example of a diligent and well-mannered student. He combines academic excellence with active participation in school activities. We expect a bright future for him.' } },
     { id: 'eval2', author: 'الكابتن سامي', role: { ar: 'مدرب كرة القدم', en: 'Football Coach' }, comment: { ar: 'لاعب موهوب ويتمتع بروح الفريق. التزامه بالتدريب يجعله قدوة لزملائه.', en: 'A talented player with great team spirit. His commitment to training makes him a role model for his teammates.' } },
+    { id: 'eval3', author: 'الأستاذ أحمد', role: { ar: 'معلم الرياضيات', en: 'Math Teacher' }, comment: { ar: 'فيصل طالب متميز في الرياضيات، يمتلك قدرة فريدة على حل المسائل المعقدة بسرعة. أتمنى له كل التوفيق.', en: 'Faisal is an outstanding math student with a unique ability to solve complex problems quickly. I wish him all the best.' } },
   ],
 };
 

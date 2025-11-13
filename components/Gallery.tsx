@@ -29,7 +29,7 @@ const Gallery: React.FC = () => {
   const FilterButton: React.FC<{onClick: () => void, isActive: boolean, children: React.ReactNode}> = ({onClick, isActive, children}) => (
       <button 
         onClick={onClick}
-        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${isActive ? 'bg-amber-500 text-black' : 'bg-teal-700 text-amber-200 hover:bg-teal-600'}`}>
+        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${isActive ? 'bg-cyan-500 text-black' : 'bg-teal-700 text-cyan-200 hover:bg-teal-600'}`}>
         {children}
       </button>
   );
@@ -38,7 +38,7 @@ const Gallery: React.FC = () => {
     <div>
       <div className="flex flex-wrap gap-4 mb-8">
         <div>
-          <label className="block text-sm font-medium text-amber-300 mb-2">{translations.filterByType[lang]}</label>
+          <label className="block text-sm font-medium text-cyan-300 mb-2">{translations.filterByType[lang]}</label>
           <div className="flex flex-wrap gap-2">
             <FilterButton onClick={() => setTypeFilter('all')} isActive={typeFilter === 'all'}>{translations.all[lang]}</FilterButton>
             <FilterButton onClick={() => setTypeFilter('image')} isActive={typeFilter === 'image'}>{translations.image[lang]}</FilterButton>
@@ -47,7 +47,7 @@ const Gallery: React.FC = () => {
           </div>
         </div>
          <div>
-          <label className="block text-sm font-medium text-amber-300 mb-2">{translations.filterByYear[lang]}</label>
+          <label className="block text-sm font-medium text-cyan-300 mb-2">{translations.filterByYear[lang]}</label>
           <div className="flex flex-wrap gap-2">
             <FilterButton onClick={() => setYearFilter('all')} isActive={yearFilter === 'all'}>{translations.all[lang]}</FilterButton>
             {years.map(year => (
@@ -74,8 +74,8 @@ const Gallery: React.FC = () => {
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-lg text-amber-500 truncate">{item.title[lang]}</h3>
-                <p className="text-sm text-amber-300">{item.description[lang]}</p>
+                <h3 className="font-bold text-lg text-cyan-400 truncate">{item.title[lang]}</h3>
+                <p className="text-sm text-cyan-300">{item.description[lang]}</p>
                 <span className="absolute top-2 right-2 rtl:right-auto rtl:left-2 bg-cyan-600 text-white text-xs font-semibold px-2 py-1 rounded-full">{item.year}</span>
               </div>
             </a>
@@ -83,7 +83,7 @@ const Gallery: React.FC = () => {
         ))}
       </div>
       {filteredItems.length === 0 && (
-          <div className="text-center py-16 text-amber-500">
+          <div className="text-center py-16 text-cyan-400">
               <p className="text-xl">لا توجد عناصر تطابق الفلترة الحالية.</p>
           </div>
       )}

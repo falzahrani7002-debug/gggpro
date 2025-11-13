@@ -71,10 +71,10 @@ const App: React.FC = () => {
 
   return (
     <AppContext.Provider value={{ lang, setLang, isAdmin, setIsAdmin, isEditing, setIsEditing, data, setData }}>
-      <div className="bg-teal-900 min-h-screen text-amber-100 relative">
+      <div className="bg-teal-900 min-h-screen text-cyan-200 relative">
         <WeatherEffects />
         <div 
-          className="fixed top-0 left-0 h-1 bg-amber-500 transition-all duration-300 z-50" 
+          className="fixed top-0 left-0 h-1 bg-cyan-500 transition-all duration-300 z-50" 
           style={{ width: `${scrollProgress}%` }}
         ></div>
         

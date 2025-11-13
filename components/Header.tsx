@@ -34,11 +34,11 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-black bg-opacity-80 backdrop-blur-md z-40 shadow-lg shadow-amber-500/10">
+    <header className="fixed top-0 left-0 right-0 bg-black bg-opacity-80 backdrop-blur-md z-40 shadow-lg shadow-cyan-500/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-amber-500 cursor-pointer" onClick={() => setActivePage('about')}>
+            <h1 className="text-2xl font-bold text-cyan-400 cursor-pointer" onClick={() => setActivePage('about')}>
               {translations.siteTitle[lang]}
             </h1>
           </div>
@@ -52,8 +52,8 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.key); }}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
                     activePage === link.key
-                      ? 'bg-amber-500 text-black'
-                      : 'text-amber-200 hover:bg-teal-700 hover:text-white'
+                      ? 'bg-cyan-500 text-black'
+                      : 'text-cyan-200 hover:bg-teal-700 hover:text-white'
                   }`}
                 >
                   {link.label}
@@ -63,18 +63,18 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
           </nav>
 
           <div className="hidden md:flex items-center space-x-4 rtl:space-x-reverse">
-            <button onClick={toggleLanguage} className="text-amber-200 hover:text-white font-semibold py-2 px-3 border border-teal-600 rounded-md transition-colors duration-300 hover:bg-teal-700">
+            <button onClick={toggleLanguage} className="text-cyan-200 hover:text-white font-semibold py-2 px-3 border border-teal-600 rounded-md transition-colors duration-300 hover:bg-teal-700">
               {lang === 'ar' ? 'EN' : 'AR'}
             </button>
             {isAdmin && (
               <div className="flex items-center gap-2 bg-teal-800 p-1 rounded-full border border-teal-600">
-                <span className={`px-2 text-xs font-bold transition-colors ${isEditing ? 'text-amber-300' : 'text-gray-400'}`}>
+                <span className={`px-2 text-xs font-bold transition-colors ${isEditing ? 'text-cyan-300' : 'text-gray-400'}`}>
                   {lang === 'ar' ? 'تعديل' : 'Edit'}
                 </span>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
                   className={`relative inline-flex items-center h-5 rounded-full w-9 transition-colors focus:outline-none ${
-                    isEditing ? 'bg-amber-500' : 'bg-gray-600'
+                    isEditing ? 'bg-cyan-500' : 'bg-gray-600'
                   }`}
                 >
                   <span
@@ -94,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
           </div>
 
           <div className="md:hidden flex items-center">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-amber-200 hover:text-white">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-cyan-200 hover:text-white">
               {isMenuOpen ? <XIcon /> : <MenuIcon />}
             </button>
           </div>
@@ -112,23 +112,23 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
                 onClick={(e) => { e.preventDefault(); handleNavClick(link.key); }}
                 className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 ${
                   activePage === link.key
-                    ? 'bg-amber-500 text-black'
-                    : 'text-amber-200 hover:bg-teal-700 hover:text-white'
+                    ? 'bg-cyan-500 text-black'
+                    : 'text-cyan-200 hover:bg-teal-700 hover:text-white'
                 }`}
               >
                 {link.label}
               </a>
             ))}
              <div className="pt-4 pb-3 border-t border-teal-700 px-2 space-y-3">
-                <button onClick={toggleLanguage} className="w-full text-amber-200 hover:text-white font-semibold py-2 px-3 border border-teal-600 rounded-md transition-colors duration-300 hover:bg-teal-700">
+                <button onClick={toggleLanguage} className="w-full text-cyan-200 hover:text-white font-semibold py-2 px-3 border border-teal-600 rounded-md transition-colors duration-300 hover:bg-teal-700">
                    {lang === 'ar' ? 'English' : 'العربية'}
                 </button>
                 {isAdmin && (
                     <div className="flex items-center justify-between gap-2 bg-teal-800 p-2 rounded-md">
-                        <span className="text-base font-medium text-amber-200">{lang === 'ar' ? 'وضع التعديل' : 'Edit Mode'}</span>
+                        <span className="text-base font-medium text-cyan-200">{lang === 'ar' ? 'وضع التعديل' : 'Edit Mode'}</span>
                         <button
                           onClick={() => setIsEditing(!isEditing)}
-                          className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors ${isEditing ? 'bg-amber-500' : 'bg-gray-600'}`}
+                          className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors ${isEditing ? 'bg-cyan-500' : 'bg-gray-600'}`}
                         >
                             <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${isEditing ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-1 rtl:-translate-x-1'}`} />
                         </button>
