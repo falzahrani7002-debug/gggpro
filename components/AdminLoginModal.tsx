@@ -44,7 +44,7 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ onClose, onLoginSucce
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="كلمة المرور"
-              className="w-full bg-teal-900 text-white rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-4 py-3 text-center"
+              className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-4 py-3 text-center diwani-input"
               autoFocus
             />
           </div>

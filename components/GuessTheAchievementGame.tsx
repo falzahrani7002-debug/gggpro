@@ -68,7 +68,7 @@ const GuessTheAchievementGame: React.FC = () => {
                     value={guess}
                     onChange={(e) => setGuess(e.target.value)}
                     placeholder={lang === 'ar' ? 'اكتب تخمينك هنا...' : 'Type your guess here...'}
-                    className="flex-grow bg-teal-900 text-white rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-4 py-3"
+                    className="flex-grow bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-4 py-3 diwani-input"
                     disabled={message.type === 'success'}
                 />
                 <button

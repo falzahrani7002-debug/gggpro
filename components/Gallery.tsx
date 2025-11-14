@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useContext } from 'react';
 import { AppContext } from '../App';
 import { translations } from '../data';
@@ -15,7 +14,8 @@ const Gallery: React.FC = () => {
 
   const years = useMemo(() => {
     const uniqueYears = [...new Set(data.gallery.map(item => item.year))];
-    return uniqueYears.sort((a, b) => b - a);
+    // FIX: Explicitly type the sort function parameters to resolve TypeScript error.
+    return uniqueYears.sort((a: number, b: number) => b - a);
   }, [data.gallery]);
 
   const filteredItems = useMemo(() => {
@@ -38,7 +38,7 @@ const Gallery: React.FC = () => {
     <div>
       <div className="flex flex-wrap gap-4 mb-8">
         <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-2">{translations.filterByType[lang]}</label>
+          <label className="block mb-2 ruqaa-label">{translations.filterByType[lang]}</label>
           <div className="flex flex-wrap gap-2">
             <FilterButton onClick={() => setTypeFilter('all')} isActive={typeFilter === 'all'}>{translations.all[lang]}</FilterButton>
             <FilterButton onClick={() => setTypeFilter('image')} isActive={typeFilter === 'image'}>{translations.image[lang]}</FilterButton>
@@ -47,7 +47,7 @@ const Gallery: React.FC = () => {
           </div>
         </div>
          <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-2">{translations.filterByYear[lang]}</label>
+          <label className="block mb-2 ruqaa-label">{translations.filterByYear[lang]}</label>
           <div className="flex flex-wrap gap-2">
             <FilterButton onClick={() => setYearFilter('all')} isActive={yearFilter === 'all'}>{translations.all[lang]}</FilterButton>
             {years.map(year => (

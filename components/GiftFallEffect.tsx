@@ -6,7 +6,8 @@ interface GiftFallEffectProps {
 }
 
 const GiftFallEffect: React.FC<GiftFallEffectProps> = ({ isActive }) => {
-  const colors = ['#67e8f9', '#22d3ee', '#06b6d4', '#7dd3fc', '#38bdf8'];
+  // Updated colors to primary/secondary colors for more variety
+  const colors = useMemo(() => ['#ef4444', '#facc15', '#3b82f6', '#22c55e', '#f97316', '#a855f7'], []);
 
   const particles = useMemo(() => {
     if (!isActive) return [];
@@ -27,7 +28,7 @@ const GiftFallEffect: React.FC<GiftFallEffectProps> = ({ isActive }) => {
       );
     }
     return items;
-  }, [isActive]);
+  }, [isActive, colors]);
 
   if (!isActive) return null;
 

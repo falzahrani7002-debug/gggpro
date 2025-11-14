@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../App';
 import { translations } from '../data';
@@ -66,24 +65,24 @@ const CommunityAchievements: React.FC = () => {
                     <h3 className="text-2xl font-bold text-cyan-400 mb-4">{translations.shareYourAchievement[lang]}</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-cyan-300 mb-1">{translations.yourName[lang]}</label>
+                            <label htmlFor="name" className="block mb-1 ruqaa-label">{translations.yourName[lang]}</label>
                             <input
                                 type="text"
                                 id="name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full bg-teal-900 text-white rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2"
+                                className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2 diwani-input"
                                 placeholder={translations.yourNamePlaceholder[lang]}
                             />
                         </div>
                         <div>
-                            <label htmlFor="achievement" className="block text-sm font-medium text-cyan-300 mb-1">{translations.yourAchievement[lang]}</label>
+                            <label htmlFor="achievement" className="block mb-1 ruqaa-label">{translations.yourAchievement[lang]}</label>
                             <textarea
                                 id="achievement"
                                 value={achievement}
                                 onChange={(e) => setAchievement(e.target.value)}
                                 rows={4}
-                                className="w-full bg-teal-900 text-white rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2"
+                                className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2 diwani-input"
                                 placeholder={translations.yourAchievementPlaceholder[lang]}
                             />
                         </div>

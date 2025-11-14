@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { AppContext } from '../App';
 import { Page } from '../types';
@@ -67,7 +66,7 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                       onSave={(newValue) => handleDataChange(`studentInfo.about.${lang}`, newValue)}
                       tag="p"
                       as="textarea"
-                      className="mt-4 text-lg text-cyan-200 leading-relaxed"
+                      className="mt-4 text-cyan-200 ruqaa-text"
                     />
                 </div>
               </div>
@@ -202,10 +201,10 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
             <div className="space-y-8">
               {data.evaluations.map((evalItem, index) => (
                 <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4">
-                  <Editable value={evalItem.comment[lang]} onSave={v => handleDataChange(`evaluations.${index}.comment.${lang}`, v)} as="textarea" tag="p" className="text-lg italic text-cyan-200" />
-                  <footer className="mt-4">
-                    <Editable value={evalItem.author} onSave={v => handleDataChange(`evaluations.${index}.author`, v)} tag="p" className="font-bold text-white" />
-                    <Editable value={evalItem.role[lang]} onSave={v => handleDataChange(`evaluations.${index}.role.${lang}`, v)} tag="p" className="text-sm text-cyan-300" />
+                  <Editable value={evalItem.comment[lang]} onSave={v => handleDataChange(`evaluations.${index}.comment.${lang}`, v)} as="textarea" tag="p" className="text-xl italic diwani-text" />
+                  <footer className="mt-4 text-right rtl:text-left">
+                    <Editable value={evalItem.author} onSave={v => handleDataChange(`evaluations.${index}.author`, v)} tag="p" className="font-bold text-lg diwani-text" />
+                    <Editable value={evalItem.role[lang]} onSave={v => handleDataChange(`evaluations.${index}.role.${lang}`, v)} tag="p" className="text-base diwani-text" />
                   </footer>
                 </blockquote>
               ))}

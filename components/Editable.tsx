@@ -58,7 +58,7 @@ const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', classN
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setInputValue(e.target.value),
       onBlur: handleSave,
       onKeyDown: handleKeyDown,
-      className: `bg-teal-700 text-white p-1 rounded-md border-2 border-cyan-500 w-full ${className}`
+      className: `bg-teal-700 p-1 rounded-md border-2 border-cyan-500 w-full diwani-input ${className}`
     };
 
     return as === 'textarea'
