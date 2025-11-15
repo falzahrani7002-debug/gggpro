@@ -7,11 +7,13 @@ interface EditableProps {
   onSave: (newValue: string) => void;
   as?: 'textarea' | 'input';
   className?: string;
+  // FIX: Add style prop to allow passing CSS properties.
+  style?: React.CSSProperties;
   // FIX: Changed type from `keyof JSX.IntrinsicElements` to `React.ElementType` to fix JSX-related type errors.
   tag?: React.ElementType;
 }
 
-const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', className, tag: Tag = 'span' }) => {
+const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', className, tag: Tag = 'span', style }) => {
   const context = useContext(AppContext);
   const [isEditingThis, setIsEditingThis] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -29,7 +31,7 @@ const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', classN
   }, [isEditingThis]);
 
   if (!context || !context.isAdmin || !context.isEditing) {
-    return <Tag className={className}>{value}</Tag>;
+    return <Tag className={className} style={style}>{value}</Tag>;
   }
   
   const { lang } = context;
@@ -58,7 +60,8 @@ const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', classN
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setInputValue(e.target.value),
       onBlur: handleSave,
       onKeyDown: handleKeyDown,
-      className: `bg-teal-700 p-1 rounded-md border-2 border-cyan-500 w-full diwani-input ${className}`
+      className: `bg-teal-700 p-1 rounded-md border-2 border-cyan-500 w-full diwani-input ${className}`,
+      style,
     };
 
     return as === 'textarea'
@@ -71,6 +74,7 @@ const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', classN
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsEditingThis(true); }}
       className={`outline-dashed outline-1 outline-transparent hover:outline-cyan-500/50 cursor-pointer hover:bg-cyan-500/10 p-1 -m-1 rounded-sm transition-all duration-200 ${className}`}
       title="Click to edit"
+      style={style}
     >
       {value || (lang === 'ar' ? 'أضف قيمة...' : 'Add value...')}
     </Tag>

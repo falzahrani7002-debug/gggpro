@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import { AppContext } from '../App';
 import GiftFallEffect from './GiftFallEffect';
 
@@ -25,18 +25,19 @@ const GuessTheAchievementGame: React.FC = () => {
         ).join(' ');
     };
 
-    const setupNewChallenge = () => {
+    const setupNewChallenge = useCallback(() => {
+        if (achievements.length === 0) return;
         const randomIndex = Math.floor(Math.random() * achievements.length);
         const newAchievement = achievements[randomIndex];
         setCurrentAchievement(newAchievement);
         setScrambled(scrambleText(newAchievement));
         setGuess('');
         setMessage({ text: '', type: '' });
-    };
+    }, [achievements]);
 
     useEffect(() => {
         setupNewChallenge();
-    }, [achievements]);
+    }, [setupNewChallenge]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
