@@ -104,4 +104,11 @@ export const translations: Translations = {
   recentAchievements: { ar: "أحدث الإنجازات", en: "Latest Achievements" },
   noAchievementsYet: { ar: "لا توجد إنجازات بعد. كن أول من يشارك!", en: "No achievements yet. Be the first to share!" },
   errorAllFieldsRequired: { ar: "الرجاء ملء جميع الحقول.", en: "Please fill in all fields." },
+  addYourEvaluation: { ar: "أضف تقييمك", en: "Add Your Evaluation" },
+  yourRole: { ar: "صفتك (مثال: معلم، مدرب)", en: "Your Role (e.g., Teacher, Coach)" },
+  yourRolePlaceholder: { ar: "مثال: معلم الرياضيات", en: "e.g., Math Teacher" },
+  yourComment: { ar: "التقييم", en: "The Evaluation" },
+  yourCommentPlaceholder: { ar: "فيصل طالب مجتهد...", en: "Faisal is a diligent student..." },
+  submitEvaluation: { ar: "أرسل التقييم", en: "Submit Evaluation" },
+  noEvaluationsYet: { ar: "لا توجد تقييمات بعد. كن أول من يضيف تقييماً!", en: "No evaluations yet. Be the first to add one!" },
 };

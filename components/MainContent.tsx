@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppContext } from '../App';
-import { Page } from '../types';
+import { Page, Evaluation } from '../types';
 import { translations } from '../data';
 import Section from './Section';
 import {
@@ -18,6 +18,12 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
   if (!context) return null;
   const { lang, data, setData } = context;
 
+  // State for evaluation form
+  const [evalAuthor, setEvalAuthor] = useState('');
+  const [evalRole, setEvalRole] = useState('');
+  const [evalComment, setEvalComment] = useState('');
+  const [evalError, setEvalError] = useState('');
+
   const handleDataChange = (path: string, value: any) => {
     setData(prevData => {
       const keys = path.split('.');
@@ -29,6 +35,31 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
       current[keys[keys.length - 1]] = value;
       return newData;
     });
+  };
+  
+  const handleEvalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!evalAuthor.trim() || !evalRole.trim() || !evalComment.trim()) {
+      setEvalError(translations.errorAllFieldsRequired[lang]);
+      return;
+    }
+
+    const newEvaluation: Evaluation = {
+      id: `eval-${Date.now()}`,
+      author: evalAuthor.trim(),
+      role: { ar: evalRole.trim(), en: evalRole.trim() },
+      comment: { ar: evalComment.trim(), en: evalComment.trim() }
+    };
+
+    setData(prevData => ({
+      ...prevData,
+      evaluations: [newEvaluation, ...prevData.evaluations]
+    }));
+
+    setEvalAuthor('');
+    setEvalRole('');
+    setEvalComment('');
+    setEvalError('');
   };
 
   const renderContent = () => {
@@ -198,16 +229,71 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
       case 'evaluations':
         return (
           <Section title={translations.nav.evaluations[lang]} icon={<StarIcon />}>
-            <div className="space-y-8">
-              {data.evaluations.map((evalItem, index) => (
-                <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4">
-                  <Editable value={evalItem.comment[lang]} onSave={v => handleDataChange(`evaluations.${index}.comment.${lang}`, v)} as="textarea" tag="p" className="text-xl italic diwani-text" />
-                  <footer className="mt-4 text-right rtl:text-left">
-                    <Editable value={evalItem.author} onSave={v => handleDataChange(`evaluations.${index}.author`, v)} tag="p" className="font-bold text-lg diwani-text" />
-                    <Editable value={evalItem.role[lang]} onSave={v => handleDataChange(`evaluations.${index}.role.${lang}`, v)} tag="p" className="text-base diwani-text" />
-                  </footer>
-                </blockquote>
-              ))}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-1">
+                <div className="bg-teal-800 p-6 rounded-lg border border-teal-700 sticky top-28">
+                  <h3 className="text-2xl font-bold text-cyan-400 mb-4">{translations.addYourEvaluation[lang]}</h3>
+                  <form onSubmit={handleEvalSubmit} className="space-y-4">
+                    <div>
+                      <label htmlFor="evalAuthor" className="block mb-1 ruqaa-label">{translations.yourName[lang]}</label>
+                      <input
+                        type="text"
+                        id="evalAuthor"
+                        value={evalAuthor}
+                        onChange={(e) => setEvalAuthor(e.target.value)}
+                        className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2 diwani-input"
+                        placeholder={translations.yourNamePlaceholder[lang]}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="evalRole" className="block mb-1 ruqaa-label">{translations.yourRole[lang]}</label>
+                      <input
+                        type="text"
+                        id="evalRole"
+                        value={evalRole}
+                        onChange={(e) => setEvalRole(e.target.value)}
+                        className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2 diwani-input"
+                        placeholder={translations.yourRolePlaceholder[lang]}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="evalComment" className="block mb-1 ruqaa-label">{translations.yourComment[lang]}</label>
+                      <textarea
+                        id="evalComment"
+                        value={evalComment}
+                        onChange={(e) => setEvalComment(e.target.value)}
+                        rows={4}
+                        className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2 diwani-input"
+                        placeholder={translations.yourCommentPlaceholder[lang]}
+                      />
+                    </div>
+                    {evalError && <p className="text-red-400 text-sm">{evalError}</p>}
+                    <button type="submit" className="w-full bg-cyan-500 text-black font-bold py-2 px-4 rounded-md hover:bg-cyan-400 transition-colors duration-300">
+                      {translations.submitEvaluation[lang]}
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="space-y-8">
+                  {data.evaluations.length > 0 ? (
+                    data.evaluations.map((evalItem, index) => (
+                      <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in">
+                        <Editable value={evalItem.comment[lang]} onSave={v => handleDataChange(`evaluations.${index}.comment.${lang}`, v)} as="textarea" tag="p" className="naskh-text text-xl font-bold text-cyan-200" style={{lineHeight: 1.8}} />
+                        <footer className="mt-4 text-right rtl:text-left">
+                          <Editable value={evalItem.author} onSave={v => handleDataChange(`evaluations.${index}.author`, v)} tag="p" className="naskh-text font-bold text-lg text-cyan-400" />
+                          <Editable value={evalItem.role[lang]} onSave={v => handleDataChange(`evaluations.${index}.role.${lang}`, v)} tag="p" className="naskh-text text-base text-cyan-300 font-normal" />
+                        </footer>
+                      </blockquote>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 bg-teal-800 rounded-lg">
+                      <p className="text-cyan-300 text-lg">{translations.noEvaluationsYet[lang]}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </Section>
         );

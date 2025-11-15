@@ -1,4 +1,3 @@
-
 export type Language = 'ar' | 'en';
 
 export type Page = 'about' | 'education' | 'skills' | 'volunteer' | 'hobbies' | 'goals' | 'gallery' | 'project' | 'evaluations' | 'game' | 'community';
@@ -112,4 +111,11 @@ export interface Translations {
   recentAchievements: Translatable;
   noAchievementsYet: Translatable;
   errorAllFieldsRequired: Translatable;
+  addYourEvaluation: Translatable;
+  yourRole: Translatable;
+  yourRolePlaceholder: Translatable;
+  yourComment: Translatable;
+  yourCommentPlaceholder: Translatable;
+  submitEvaluation: Translatable;
+  noEvaluationsYet: Translatable;
 }
