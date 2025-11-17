@@ -92,18 +92,18 @@ const SmartChoiceGame: React.FC = () => {
           </div>
         ) : (
           <div>
-            <p className="text-xl text-center text-amber-300 font-semibold mb-6 ruqaa-text">{currentScenario.question[lang]}</p>
+            <p className="text-xl text-center text-amber-300 font-semibold mb-6">{currentScenario.question[lang]}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {currentScenario.choices.map((choice, index) => {
                 const choiceIsSelected = showFeedback && choice === selectedChoice;
-                const buttonTextColor = choiceIsSelected ? 'text-white' : 'text-yellow-600';
+                const buttonTextColor = choiceIsSelected ? 'text-white' : 'text-amber-300';
 
                 return (
                   <button
                     key={index}
                     onClick={() => handleChoiceClick(choice)}
                     disabled={showFeedback}
-                    className={`p-4 rounded-md transition-all duration-300 border-2 text-center font-['Rakkas'] text-xl ${buttonTextColor} ${
+                    className={`p-4 rounded-md transition-all duration-300 border-2 text-center font-semibold text-xl ${buttonTextColor} ${
                       showFeedback
                         ? (choiceIsSelected ? (choice.points > 0 ? 'bg-emerald-500 border-emerald-400' : 'bg-red-500 border-red-400') : 'bg-gray-600 border-gray-500 opacity-50')
                         : 'bg-teal-700 border-teal-600 hover:bg-cyan-700 hover:border-cyan-500'
