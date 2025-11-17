@@ -4,16 +4,14 @@ import { AppContext } from '../App';
 
 interface EditableProps {
   value: string;
-  onSave: (newValue: string) => void;
+  fieldPath: string;
   as?: 'textarea' | 'input';
   className?: string;
-  // FIX: Add style prop to allow passing CSS properties.
   style?: React.CSSProperties;
-  // FIX: Changed type from `keyof JSX.IntrinsicElements` to `React.ElementType` to fix JSX-related type errors.
   tag?: React.ElementType;
 }
 
-const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', className, tag: Tag = 'span', style }) => {
+const Editable: React.FC<EditableProps> = ({ value, fieldPath, as = 'input', className, tag: Tag = 'span', style }) => {
   const context = useContext(AppContext);
   const [isEditingThis, setIsEditingThis] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -29,22 +27,22 @@ const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', classN
       inputRef.current?.select();
     }
   }, [isEditingThis]);
-
-  if (!context || !context.isAdmin || !context.isEditing) {
+  
+  const { isAdmin, isEditing, lang, updateData } = context || {};
+  
+  if (!isAdmin || !isEditing) {
     return <Tag className={className} style={style}>{value}</Tag>;
   }
-  
-  const { lang } = context;
 
   const handleSave = () => {
     if (inputValue !== value) {
-      onSave(inputValue);
+      updateData?.(fieldPath, inputValue);
     }
     setIsEditingThis(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && as === 'input') {
+    if (e.key === 'Enter' && as === 'input' && !e.shiftKey) {
       e.preventDefault();
       handleSave();
     } else if (e.key === 'Escape') {

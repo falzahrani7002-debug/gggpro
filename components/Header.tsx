@@ -9,14 +9,15 @@ interface HeaderProps {
   activePage: Page;
   setActivePage: (page: Page) => void;
   onAdminClick: () => void;
+  onAdminLogout: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick }) => {
+const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick, onAdminLogout }) => {
   const context = useContext(AppContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   if (!context) return null;
-  const { lang, setLang, isAdmin, setIsAdmin, isEditing, setIsEditing } = context;
+  const { lang, setLang, isAdmin, isEditing, setIsEditing } = context;
 
   const navLinks: { key: Page; label: string }[] = Object.keys(translations.nav).map((key) => ({
     key: key as Page,
@@ -86,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
               </div>
             )}
             <button 
-              onClick={() => isAdmin ? setIsAdmin(false) : onAdminClick()} 
+              onClick={() => isAdmin ? onAdminLogout() : onAdminClick()} 
               className="bg-blue-600 text-white font-semibold py-2 px-4 border border-blue-500 rounded-md shadow-sm hover:bg-blue-500 transition-colors duration-300"
             >
               {isAdmin ? translations.adminLogout[lang] : translations.adminLogin[lang]}
@@ -136,7 +137,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
                 )}
                 <button 
                   onClick={() => {
-                      isAdmin ? setIsAdmin(false) : onAdminClick();
+                      isAdmin ? onAdminLogout() : onAdminClick();
                       setIsMenuOpen(false);
                   }}
                   className="w-full bg-blue-600 text-white font-semibold py-2 px-4 border border-blue-500 rounded-md shadow-sm hover:bg-blue-500 transition-colors duration-300"

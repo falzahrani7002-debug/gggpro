@@ -7,19 +7,9 @@ import Editable from './Editable';
 
 const Footer: React.FC = () => {
   const context = useContext(AppContext);
-  if (!context) return null;
+  if (!context || !context.data) return null;
 
-  const { lang, data, setData } = context;
-
-  const handleEmailSave = (newValue: string) => {
-    setData(prevData => ({
-      ...prevData,
-      studentInfo: {
-        ...prevData.studentInfo,
-        email: newValue
-      }
-    }));
-  };
+  const { lang, data } = context;
 
   return (
     <footer className="bg-black border-t border-cyan-500/20 py-8">
@@ -30,7 +20,7 @@ const Footer: React.FC = () => {
           <a href={`mailto:${data.studentInfo.email}`}>
             <Editable
               value={data.studentInfo.email}
-              onSave={handleEmailSave}
+              fieldPath="studentInfo.email"
               tag="span"
               className="text-lg"
             />

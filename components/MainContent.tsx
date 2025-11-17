@@ -1,44 +1,33 @@
-
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../App';
-import { Page, Evaluation } from '../types';
+import { Page, Evaluation, Goal } from '../types';
 import { translations } from '../data';
 import Section from './Section';
 import {
   UserIcon, EducationIcon, SparklesIcon, HeartIcon, RocketIcon,
-  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon
+  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon, XIcon, PlusIcon
 } from './Icons';
 import Gallery from './Gallery';
-import GuessTheAchievementGame from './GuessTheAchievementGame';
 import Editable from './Editable';
 import CommunityAchievements from './CommunityAchievements';
 import EntertainmentSection from './EntertainmentSection';
+import AddItemModal from './AddItemModal';
 
 const MainContent: React.FC<{ page: Page }> = ({ page }) => {
   const context = useContext(AppContext);
-  if (!context) return null;
-  const { lang, data, setData } = context;
+  if (!context || !context.data) return null;
+  const { lang, data, addArrayItem, isEditing, isAdmin, deleteArrayItem } = context;
+
+  // State for the generic add modal
+  const [modalInfo, setModalInfo] = useState<{ path: string; type: 'skill' | 'volunteer' | 'goal', goalType?: 'short' | 'long' } | null>(null);
 
   // State for evaluation form
   const [evalAuthor, setEvalAuthor] = useState('');
   const [evalRole, setEvalRole] = useState('');
   const [evalComment, setEvalComment] = useState('');
   const [evalError, setEvalError] = useState('');
-
-  const handleDataChange = (path: string, value: any) => {
-    setData(prevData => {
-      const keys = path.split('.');
-      const newData = JSON.parse(JSON.stringify(prevData));
-      let current = newData;
-      for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
-      }
-      current[keys[keys.length - 1]] = value;
-      return newData;
-    });
-  };
   
-  const handleEvalSubmit = (e: React.FormEvent) => {
+  const handleEvalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!evalAuthor.trim() || !evalRole.trim() || !evalComment.trim()) {
       setEvalError(translations.errorAllFieldsRequired[lang]);
@@ -52,10 +41,7 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
       comment: { ar: evalComment.trim(), en: evalComment.trim() }
     };
 
-    setData(prevData => ({
-      ...prevData,
-      evaluations: [newEvaluation, ...prevData.evaluations]
-    }));
+    await addArrayItem('evaluations', newEvaluation);
 
     setEvalAuthor('');
     setEvalRole('');
@@ -76,26 +62,26 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                 <div className="flex-1">
                   <Editable
                     value={data.studentInfo.name}
-                    onSave={(newValue) => handleDataChange('studentInfo.name', newValue)}
+                    fieldPath="studentInfo.name"
                     tag="h2"
                     className="text-3xl sm:text-4xl font-black text-cyan-400"
                   />
                   <div className="text-xl text-cyan-300 mt-1">
                     <Editable
                       value={data.studentInfo.grade[lang]}
-                      onSave={(newValue) => handleDataChange(`studentInfo.grade.${lang}`, newValue)}
+                      fieldPath={`studentInfo.grade.${lang}`}
                       tag="span"
                       className="text-lg md:text-xl text-cyan-300"
                     /> @ <Editable
                       value={data.studentInfo.school}
-                      onSave={(newValue) => handleDataChange('studentInfo.school', newValue)}
+                      fieldPath="studentInfo.school"
                       tag="span"
                       className="text-lg md:text-xl text-cyan-300"
                     />
                   </div>
                    <Editable
                       value={data.studentInfo.about[lang]}
-                      onSave={(newValue) => handleDataChange(`studentInfo.about.${lang}`, newValue)}
+                      fieldPath={`studentInfo.about.${lang}`}
                       tag="p"
                       as="textarea"
                       className="mt-4 text-cyan-200 ruqaa-text"
@@ -111,9 +97,9 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
           <Section title={translations.nav.education[lang]} icon={<EducationIcon />}>
             <Timeline items={data.education.map((item, index) => ({
               id: item.id,
-              title: <Editable value={item.degree[lang]} onSave={v => handleDataChange(`education.${index}.degree.${lang}`, v)} tag="span" />,
-              subtitle: <Editable value={item.institution[lang]} onSave={v => handleDataChange(`education.${index}.institution.${lang}`, v)} tag="span" />,
-              period: <Editable value={item.years} onSave={v => handleDataChange(`education.${index}.years`, v)} tag="span" />
+              title: <Editable value={item.degree[lang]} fieldPath={`education.${index}.degree.${lang}`} tag="span" />,
+              subtitle: <Editable value={item.institution[lang]} fieldPath={`education.${index}.institution.${lang}`} tag="span" />,
+              period: <Editable value={item.years} fieldPath={`education.${index}.years`} tag="span" />
             }))} />
           </Section>
         );
@@ -122,58 +108,105 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
         return (
           <Section title={translations.nav.skills[lang]} icon={<SparklesIcon />}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {data.skills.map((skill, index) => <SkillBar 
-                key={skill.id} 
-                name={<Editable value={skill.name[lang]} onSave={v => handleDataChange(`skills.${index}.name.${lang}`, v)} tag="span" />} 
-                level={skill.level} 
-              />)}
+              {data.skills.map((skill, index) => (
+                <div key={skill.id} className="relative group">
+                  <SkillBar 
+                    name={<Editable value={skill.name[lang]} fieldPath={`skills.${index}.name.${lang}`} tag="span" />} 
+                    level={skill.level} 
+                  />
+                   {isAdmin && isEditing && (
+                    <button 
+                      onClick={() => deleteArrayItem('skills', skill)}
+                      className="absolute -top-2 -right-2 rtl:-right-auto rtl:-left-2 z-10 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100"
+                      aria-label="Delete skill"
+                    >
+                      <XIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
+             {isAdmin && isEditing && (
+              <div className="mt-8 text-center">
+                <button 
+                  onClick={() => setModalInfo({ path: 'skills', type: 'skill' })}
+                  className="bg-emerald-500 text-white font-bold py-2 px-4 rounded-md hover:bg-emerald-400 transition-colors duration-300 flex items-center gap-2 mx-auto"
+                >
+                  <PlusIcon />
+                  {lang === 'ar' ? 'إضافة مهارة' : 'Add Skill'}
+                </button>
+              </div>
+            )}
           </Section>
         );
       
       case 'volunteer':
         return (
           <Section title={translations.nav.volunteer[lang]} icon={<HeartIcon />}>
-             <Timeline items={data.volunteerWork.map((item, index) => ({
-              id: item.id,
-              title: <Editable value={item.role[lang]} onSave={v => handleDataChange(`volunteerWork.${index}.role.${lang}`, v)} tag="span" />,
-              subtitle: <Editable value={item.organization[lang]} onSave={v => handleDataChange(`volunteerWork.${index}.organization.${lang}`, v)} tag="span" />,
-              period: <Editable value={item.years} onSave={v => handleDataChange(`volunteerWork.${index}.years`, v)} tag="span" />,
-              description: <Editable value={item.description[lang]} onSave={v => handleDataChange(`volunteerWork.${index}.description.${lang}`, v)} tag="span" as="textarea" />
-            }))} />
+             <Timeline 
+                items={data.volunteerWork.map((item, index) => ({
+                    id: item.id,
+                    title: <Editable value={item.role[lang]} fieldPath={`volunteerWork.${index}.role.${lang}`} tag="span" />,
+                    subtitle: <Editable value={item.organization[lang]} fieldPath={`volunteerWork.${index}.organization.${lang}`} tag="span" />,
+                    period: <Editable value={item.years} fieldPath={`volunteerWork.${index}.years`} tag="span" />,
+                    description: <Editable value={item.description[lang]} fieldPath={`volunteerWork.${index}.description.${lang}`} tag="span" as="textarea" />,
+                    onDelete: () => deleteArrayItem('volunteerWork', item)
+                }))} 
+              />
+              {isAdmin && isEditing && (
+                <div className="mt-8 text-center">
+                  <button 
+                    onClick={() => setModalInfo({ path: 'volunteerWork', type: 'volunteer' })}
+                    className="bg-emerald-500 text-white font-bold py-2 px-4 rounded-md hover:bg-emerald-400 transition-colors duration-300 flex items-center gap-2 mx-auto"
+                  >
+                    <PlusIcon />
+                    {lang === 'ar' ? 'إضافة عمل تطوعي' : 'Add Volunteer Work'}
+                  </button>
+                </div>
+              )}
           </Section>
         );
       
       case 'goals':
+        const renderGoalList = (goals: Goal[], type: 'short' | 'long') => (
+          <div>
+            <h3 className="text-2xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
+              <TargetIcon /> {type === 'short' ? translations.shortTermGoals[lang] : translations.longTermGoals[lang]}
+            </h3>
+            <ul className="space-y-3">
+              {goals.map((goal, index) => (
+                <li key={goal.id} className="group flex items-start gap-3 p-3 bg-teal-800 rounded-md relative">
+                  <CheckIcon className={`w-6 h-6 ${type === 'short' ? 'text-emerald-400' : 'text-cyan-400'} mt-1 flex-shrink-0`} />
+                  <Editable value={goal.text[lang]} fieldPath={`goals.${type}Term.${index}.text.${lang}`} tag="span" className="flex-grow" />
+                  {isAdmin && isEditing && (
+                    <button 
+                      onClick={() => deleteArrayItem(`goals.${type}Term`, goal)}
+                      className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-10 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100"
+                      aria-label="Delete goal"
+                    >
+                      <XIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {isAdmin && isEditing && (
+              <button 
+                onClick={() => setModalInfo({ path: `goals.${type}Term`, type: 'goal', goalType: type })}
+                className="mt-4 bg-emerald-500/50 text-white text-sm font-bold py-1 px-3 rounded-md hover:bg-emerald-500/80 transition-colors duration-300 flex items-center gap-1"
+              >
+                <PlusIcon className="w-4 h-4" />
+                {lang === 'ar' ? 'إضافة هدف' : 'Add Goal'}
+              </button>
+            )}
+          </div>
+        );
+
         return (
           <Section title={translations.nav.goals[lang]} icon={<RocketIcon />}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-2xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                  <TargetIcon /> {translations.shortTermGoals[lang]}
-                </h3>
-                <ul className="space-y-3">
-                  {data.goals.shortTerm.map((goal, index) => (
-                    <li key={goal.id} className="flex items-start gap-3 p-3 bg-teal-800 rounded-md">
-                      <CheckIcon className="w-6 h-6 text-emerald-400 mt-1 flex-shrink-0" />
-                      <Editable value={goal.text[lang]} onSave={v => handleDataChange(`goals.shortTerm.${index}.text.${lang}`, v)} tag="span" />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                  <TargetIcon /> {translations.longTermGoals[lang]}
-                </h3>
-                <ul className="space-y-3">
-                  {data.goals.longTerm.map((goal, index) => (
-                    <li key={goal.id} className="flex items-start gap-3 p-3 bg-teal-800 rounded-md">
-                      <CheckIcon className="w-6 h-6 text-cyan-400 mt-1 flex-shrink-0" />
-                      <Editable value={goal.text[lang]} onSave={v => handleDataChange(`goals.longTerm.${index}.text.${lang}`, v)} tag="span" />
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {renderGoalList(data.goals.shortTerm, 'short')}
+              {renderGoalList(data.goals.longTerm, 'long')}
             </div>
           </Section>
         );
@@ -239,10 +272,10 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                   {data.evaluations.length > 0 ? (
                     data.evaluations.map((evalItem, index) => (
                       <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in">
-                        <Editable value={evalItem.comment[lang]} onSave={v => handleDataChange(`evaluations.${index}.comment.${lang}`, v)} as="textarea" tag="p" className="naskh-text text-xl font-bold text-cyan-200" style={{lineHeight: 1.8}} />
+                        <Editable value={evalItem.comment[lang]} fieldPath={`evaluations.${index}.comment.${lang}`} as="textarea" tag="p" className="naskh-text text-xl font-bold text-cyan-200" style={{lineHeight: 1.8}} />
                         <footer className="mt-4 text-right rtl:text-left">
-                          <Editable value={evalItem.author} onSave={v => handleDataChange(`evaluations.${index}.author`, v)} tag="p" className="naskh-text font-bold text-lg text-cyan-400" />
-                          <Editable value={evalItem.role[lang]} onSave={v => handleDataChange(`evaluations.${index}.role.${lang}`, v)} tag="p" className="naskh-text text-base text-cyan-300 font-normal" />
+                          <Editable value={evalItem.author} fieldPath={`evaluations.${index}.author`} tag="p" className="naskh-text font-bold text-lg text-cyan-400" />
+                          <Editable value={evalItem.role[lang]} fieldPath={`evaluations.${index}.role.${lang}`} tag="p" className="naskh-text text-base text-cyan-300 font-normal" />
                         </footer>
                       </blockquote>
                     ))
@@ -276,7 +309,19 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
     }
   };
 
-  return <div className="container mx-auto">{renderContent()}</div>;
+  return (
+    <div className="container mx-auto">
+      {renderContent()}
+      {modalInfo && (
+        <AddItemModal 
+          path={modalInfo.path}
+          type={modalInfo.type}
+          goalType={modalInfo.goalType}
+          onClose={() => setModalInfo(null)}
+        />
+      )}
+    </div>
+  );
 };
 
 const Section: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
@@ -302,18 +347,33 @@ const SkillBar: React.FC<{ name: React.ReactNode, level: number }> = ({ name, le
   </div>
 );
 
-const Timeline: React.FC<{ items: { id: string; title: React.ReactNode; subtitle: React.ReactNode; period: React.ReactNode; description?: React.ReactNode }[] }> = ({ items }) => (
-  <div className="relative border-l-2 border-cyan-500 rtl:border-l-0 rtl:border-r-2 ml-4 rtl:ml-0 rtl:mr-4 space-y-12">
-    {items.map((item) => (
-      <div key={item.id} className="pl-8 rtl:pl-0 rtl:pr-8 relative">
-        <div className="absolute -left-2.5 rtl:-left-auto rtl:-right-2.5 top-1 w-5 h-5 bg-teal-900 border-2 border-cyan-500 rounded-full"></div>
-        <time className="mb-1 text-sm font-normal leading-none text-cyan-300">{item.period}</time>
-        <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-        <h4 className="text-md font-medium text-cyan-300">{item.subtitle}</h4>
-        {item.description && <p className="mt-2 text-base font-normal text-cyan-200">{item.description}</p>}
-      </div>
-    ))}
-  </div>
-);
+const Timeline: React.FC<{ items: { id: string; title: React.ReactNode; subtitle: React.ReactNode; period: React.ReactNode; description?: React.ReactNode; onDelete?: () => void; }[] }> = ({ items }) => {
+  const context = useContext(AppContext);
+  if (!context) return null;
+  const { isAdmin, isEditing } = context;
+
+  return (
+    <div className="relative border-l-2 border-cyan-500 rtl:border-l-0 rtl:border-r-2 ml-4 rtl:ml-0 rtl:mr-4 space-y-12">
+      {items.map((item) => (
+        <div key={item.id} className="pl-8 rtl:pl-0 rtl:pr-8 relative group">
+          <div className="absolute -left-2.5 rtl:-left-auto rtl:-right-2.5 top-1 w-5 h-5 bg-teal-900 border-2 border-cyan-500 rounded-full"></div>
+          {isAdmin && isEditing && item.onDelete && (
+             <button 
+               onClick={item.onDelete}
+               className="absolute top-0 right-0 rtl:right-auto rtl:left-0 z-10 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100"
+               aria-label="Delete item"
+             >
+               <XIcon className="w-4 h-4" />
+             </button>
+          )}
+          <time className="mb-1 text-sm font-normal leading-none text-cyan-300">{item.period}</time>
+          <h3 className="text-xl font-semibold text-white">{item.title}</h3>
+          <h4 className="text-md font-medium text-cyan-300">{item.subtitle}</h4>
+          {item.description && <p className="mt-2 text-base font-normal text-cyan-200">{item.description}</p>}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default MainContent;

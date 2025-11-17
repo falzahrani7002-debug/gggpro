@@ -6,20 +6,26 @@ interface AdminLoginModalProps {
   onLoginSuccess: () => void;
 }
 
-// In a real app, this would be a proper authentication flow.
-const ADMIN_PASSWORD = 'faisal7021'; 
+const ADMIN_PASSWORD = 'faisal7021';
 
 const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ onClose, onLoginSuccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      onLoginSuccess();
-    } else {
-      setError('كلمة المرور غير صحيحة. حاول مرة أخرى.');
-    }
+    setIsLoading(true);
+    setError('');
+
+    setTimeout(() => {
+      if (password === ADMIN_PASSWORD) {
+        onLoginSuccess();
+      } else {
+        setError('كلمة المرور غير صحيحة.');
+      }
+      setIsLoading(false);
+    }, 500);
   };
 
   return (
@@ -33,7 +39,7 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ onClose, onLoginSucce
                 <LockIcon className="h-6 w-6 text-cyan-300" />
             </div>
             <h3 className="text-2xl font-bold text-white mt-4">دخول لوحة التحكم</h3>
-            <p className="text-cyan-300 mt-2">الرجاء إدخال كلمة المرور للوصول إلى وضع الإدارة.</p>
+            <p className="text-cyan-300">الرجاء إدخال كلمة المرور للوصول إلى وضع الإدارة.</p>
         </div>
         <form onSubmit={handleSubmit} className="mt-6">
           <div>
@@ -52,9 +58,10 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ onClose, onLoginSucce
           <div className="mt-6">
             <button
               type="submit"
-              className="w-full bg-cyan-500 text-black font-bold py-3 px-4 rounded-md hover:bg-cyan-400 transition-colors duration-300"
+              disabled={isLoading}
+              className="w-full bg-cyan-500 text-black font-bold py-3 px-4 rounded-md hover:bg-cyan-400 transition-colors duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed"
             >
-              دخول
+              {isLoading ? 'جارِ الدخول...' : 'دخول'}
             </button>
           </div>
         </form>

@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../App';
 import { translations } from '../data';
+import { db } from '../firebase-config';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, Timestamp } from 'firebase/firestore';
 
 interface CommunityAchievement {
   id: string;
   name: string;
   achievement: string;
-  timestamp: number;
+  timestamp: Timestamp;
 }
 
 const CommunityAchievements: React.FC = () => {
@@ -18,44 +20,45 @@ const CommunityAchievements: React.FC = () => {
     const [name, setName] = useState('');
     const [achievement, setAchievement] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        try {
-            const saved = localStorage.getItem('communityAchievements');
-            if (saved) {
-                setAchievements(JSON.parse(saved));
-            }
-        } catch (e) {
-            console.error("Failed to load community achievements", e);
-        }
+        const q = query(collection(db, "communityAchievements"), orderBy("timestamp", "desc"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const achievementsData: CommunityAchievement[] = [];
+            querySnapshot.forEach((doc) => {
+                achievementsData.push({ id: doc.id, ...doc.data() } as CommunityAchievement);
+            });
+            setAchievements(achievementsData);
+        });
+
+        return () => unsubscribe();
     }, []);
 
-    useEffect(() => {
-        try {
-            localStorage.setItem('communityAchievements', JSON.stringify(achievements));
-        } catch (e) {
-            console.error("Failed to save community achievements", e);
-        }
-    }, [achievements]);
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim() || !achievement.trim()) {
             setError(translations.errorAllFieldsRequired[lang]);
             return;
         }
-
-        const newAchievement: CommunityAchievement = {
-            id: Date.now().toString(),
-            name: name.trim(),
-            achievement: achievement.trim(),
-            timestamp: Date.now()
-        };
-
-        setAchievements([newAchievement, ...achievements]);
-        setName('');
-        setAchievement('');
+        
+        setIsLoading(true);
         setError('');
+
+        try {
+            await addDoc(collection(db, "communityAchievements"), {
+                name: name.trim(),
+                achievement: achievement.trim(),
+                timestamp: serverTimestamp()
+            });
+            setName('');
+            setAchievement('');
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            setError("حدث خطأ أثناء إرسال إنجازك.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -87,8 +90,8 @@ const CommunityAchievements: React.FC = () => {
                             />
                         </div>
                         {error && <p className="text-red-400 text-sm">{error}</p>}
-                        <button type="submit" className="w-full bg-cyan-500 text-black font-bold py-2 px-4 rounded-md hover:bg-cyan-400 transition-colors duration-300">
-                            {translations.submitAchievement[lang]}
+                        <button type="submit" disabled={isLoading} className="w-full bg-cyan-500 text-black font-bold py-2 px-4 rounded-md hover:bg-cyan-400 transition-colors duration-300 disabled:bg-gray-500">
+                            {isLoading ? 'جارِ النشر...' : translations.submitAchievement[lang]}
                         </button>
                     </form>
                 </div>
