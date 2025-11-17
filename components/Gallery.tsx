@@ -1,9 +1,11 @@
+
 import React, { useState, useMemo, useContext } from 'react';
 import { AppContext } from '../App';
 import { translations } from '../data';
 import { GalleryItem } from '../types';
-import { ImageIcon, VideoIcon, DocumentIcon, XIcon } from './Icons';
+import { ImageIcon, VideoIcon, DocumentIcon, XIcon, PencilIcon } from './Icons';
 import AddGalleryItemModal from './AddGalleryItemModal';
+import Editable from './Editable';
 
 const Gallery: React.FC = () => {
   const context = useContext(AppContext);
@@ -12,7 +14,7 @@ const Gallery: React.FC = () => {
 
   const [typeFilter, setTypeFilter] = useState<GalleryItem['type'] | 'all'>('all');
   const [yearFilter, setYearFilter] = useState<number | 'all'>('all');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalState, setModalState] = useState<{ mode: 'add' | 'edit'; item?: GalleryItem } | null>(null);
 
   const years = useMemo(() => {
     const uniqueYears = [...new Set(data.gallery.map(item => item.year))];
@@ -34,6 +36,8 @@ const Gallery: React.FC = () => {
         {children}
       </button>
   );
+
+  const getOriginalIndex = (itemId: string) => data.gallery.findIndex(g => g.id === itemId);
 
   return (
     <div>
@@ -59,27 +63,38 @@ const Gallery: React.FC = () => {
             </div>
         </div>
         {isAdmin && isEditing && (
-            <button onClick={() => setIsModalOpen(true)} className="bg-emerald-500 text-white font-bold py-2 px-4 rounded-md hover:bg-emerald-400 transition-colors duration-300">
+            <button onClick={() => setModalState({ mode: 'add' })} className="bg-emerald-500 text-white font-bold py-2 px-4 rounded-md hover:bg-emerald-400 transition-colors duration-300">
                 {lang === 'ar' ? 'إضافة عنصر جديد' : 'Add New Item'}
             </button>
         )}
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredItems.map(item => (
+        {filteredItems.map(item => {
+          const originalIndex = getOriginalIndex(item.id);
+          return (
           <div key={item.id} className="group relative overflow-hidden rounded-lg shadow-lg bg-teal-800 border border-teal-700">
             {isAdmin && isEditing && (
-              <button 
-                onClick={() => deleteGalleryItem(item)}
-                className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-20 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-colors"
-                aria-label="Delete item"
-              >
-                <XIcon className="w-5 h-5" />
-              </button>
+              <div className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-20 flex flex-col gap-2">
+                <button 
+                  onClick={() => deleteGalleryItem(item)}
+                  className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-colors"
+                  aria-label="Delete item"
+                >
+                  <XIcon className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => setModalState({ mode: 'edit', item: item })}
+                  className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors"
+                  aria-label="Edit item"
+                >
+                  <PencilIcon className="w-5 h-5" />
+                </button>
+              </div>
             )}
             <a href={item.url} target="_blank" rel="noopener noreferrer">
               <img
-                src={item.thumbnailUrl || (item.type === 'image' ? item.url : 'https://picsum.photos/seed/placeholder/800/600')}
+                src={item.thumbnailUrl || (item.type === 'image' && item.url.startsWith('data:image')) ? item.url : 'https://picsum.photos/seed/placeholder/800/600'}
                 alt={item.title[lang]}
                 className="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300"
               />
@@ -91,20 +106,26 @@ const Gallery: React.FC = () => {
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-lg text-cyan-400 truncate">{item.title[lang]}</h3>
-                <p className="text-sm text-cyan-300">{item.description[lang]}</p>
-                <span className="absolute top-2 left-2 rtl:left-auto rtl:right-2 bg-cyan-600 text-white text-xs font-semibold px-2 py-1 rounded-full">{item.year}</span>
+                <h3 className="font-bold text-lg text-cyan-400 truncate">
+                  <Editable value={item.title[lang]} fieldPath={`gallery.${originalIndex}.title.${lang}`} tag="span" />
+                </h3>
+                <p className="text-sm text-cyan-300">
+                  <Editable value={item.description[lang]} fieldPath={`gallery.${originalIndex}.description.${lang}`} tag="span" />
+                </p>
+                <span className="absolute top-2 left-2 rtl:left-auto rtl:right-2 bg-cyan-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
+                  <Editable value={String(item.year)} fieldPath={`gallery.${originalIndex}.year`} tag="span" />
+                </span>
               </div>
             </a>
           </div>
-        ))}
+        )})}
       </div>
       {filteredItems.length === 0 && (
           <div className="text-center py-16 text-cyan-400">
               <p className="text-xl">لا توجد عناصر تطابق الفلترة الحالية.</p>
           </div>
       )}
-      {isModalOpen && <AddGalleryItemModal onClose={() => setIsModalOpen(false)} />}
+      {modalState && <AddGalleryItemModal itemToEdit={modalState.item} onClose={() => setModalState(null)} />}
     </div>
   );
 };

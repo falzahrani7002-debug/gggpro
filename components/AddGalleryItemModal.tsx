@@ -1,16 +1,27 @@
-import React, { useState, useContext } from 'react';
+
+import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../App';
 import { XIcon } from './Icons';
-import { storage } from '../firebase-config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { GalleryItem } from '../types';
 
-interface AddGalleryItemModalProps {
+interface GalleryItemModalProps {
   onClose: () => void;
+  itemToEdit?: GalleryItem;
 }
 
-const AddGalleryItemModal: React.FC<AddGalleryItemModalProps> = ({ onClose }) => {
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
+};
+
+const AddGalleryItemModal: React.FC<GalleryItemModalProps> = ({ onClose, itemToEdit }) => {
   const context = useContext(AppContext);
+  const isEditMode = !!itemToEdit;
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [year, setYear] = useState(new Date().getFullYear());
@@ -19,13 +30,26 @@ const AddGalleryItemModal: React.FC<AddGalleryItemModalProps> = ({ onClose }) =>
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (isEditMode) {
+      setTitle(itemToEdit.title.ar); // Simple assumption for now
+      setDescription(itemToEdit.description.ar);
+      setYear(itemToEdit.year);
+      setType(itemToEdit.type);
+    }
+  }, [isEditMode, itemToEdit]);
+
   if (!context) return null;
-  const { addArrayItem, lang } = context;
+  const { addArrayItem, updateGalleryItem } = context;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !description || !file) {
-      setError('الرجاء ملء جميع الحقول واختيار ملف.');
+    if (!title || !description) {
+      setError('الرجاء ملء حقلي العنوان والوصف.');
+      return;
+    }
+    if (!isEditMode && !file) {
+      setError('الرجاء اختيار ملف لإضافته.');
       return;
     }
     
@@ -33,31 +57,31 @@ const AddGalleryItemModal: React.FC<AddGalleryItemModalProps> = ({ onClose }) =>
     setError('');
 
     try {
-      // 1. Upload file to Firebase Storage
-      const fileRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
-      const snapshot = await uploadBytes(fileRef, file);
-      
-      // 2. Get download URL
-      const downloadURL = await getDownloadURL(snapshot.ref);
+      let fileUrl = itemToEdit?.url || '';
+      if (file) {
+        fileUrl = await convertToBase64(file);
+      }
 
-      // 3. Create new gallery item object
-      const newItem: GalleryItem = {
-        id: `gal-${Date.now()}`,
+      const itemData: GalleryItem = {
+        id: isEditMode ? itemToEdit.id : `gal-${Date.now()}`,
         title: { ar: title, en: title },
         description: { ar: description, en: description },
         year,
         type,
-        url: downloadURL,
-        thumbnailUrl: type === 'video' ? 'https://picsum.photos/seed/newvideo/800/600' : undefined,
+        url: fileUrl,
+        thumbnailUrl: type === 'video' && (file || isEditMode) ? 'https://picsum.photos/seed/newvideo/800/600' : undefined,
       };
-
-      // 4. Add item to Firestore
-      await addArrayItem('gallery', newItem);
+      
+      if (isEditMode) {
+        await updateGalleryItem(itemData);
+      } else {
+        await addArrayItem('gallery', itemData);
+      }
       onClose();
 
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء رفع الملف. الرجاء المحاولة مرة أخرى.');
+      setError('حدث خطأ أثناء معالجة الملف. الرجاء المحاولة مرة أخرى.');
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +93,9 @@ const AddGalleryItemModal: React.FC<AddGalleryItemModalProps> = ({ onClose }) =>
         <button onClick={onClose} className="absolute top-4 right-4 rtl:right-auto rtl:left-4 text-cyan-300 hover:text-white">
           <XIcon />
         </button>
-        <h3 className="text-2xl font-bold text-white mb-6 text-center">إضافة عنصر جديد للمعرض</h3>
+        <h3 className="text-2xl font-bold text-white mb-6 text-center">
+          {isEditMode ? 'تعديل العنصر' : 'إضافة عنصر جديد للمعرض'}
+        </h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="title" className="block mb-1 ruqaa-label">العنوان</label>
@@ -94,13 +120,13 @@ const AddGalleryItemModal: React.FC<AddGalleryItemModalProps> = ({ onClose }) =>
             </div>
           </div>
           <div>
-            <label htmlFor="file" className="block mb-1 ruqaa-label">الملف</label>
+            <label htmlFor="file" className="block mb-1 ruqaa-label">الملف {isEditMode && '(اتركه فارغاً لعدم التغيير)'}</label>
             <input type="file" id="file" onChange={e => setFile(e.target.files ? e.target.files[0] : null)} className="w-full text-cyan-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500" />
           </div>
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
           <div className="pt-4">
             <button type="submit" disabled={isLoading} className="w-full bg-cyan-500 text-black font-bold py-3 px-4 rounded-md hover:bg-cyan-400 transition-colors duration-300 disabled:bg-gray-500">
-              {isLoading ? 'جارِ الرفع...' : 'إضافة'}
+              {isLoading ? 'جارِ الحفظ...' : (isEditMode ? 'حفظ التعديلات' : 'إضافة')}
             </button>
           </div>
         </form>

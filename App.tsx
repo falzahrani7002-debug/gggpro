@@ -8,7 +8,7 @@ import Footer from './components/Footer';
 import AdminLoginModal from './components/AdminLoginModal';
 import WeatherEffects from './components/WeatherEffects';
 import { db, storage } from './firebase-config';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 
 export const AppContext = createContext<{
@@ -22,6 +22,7 @@ export const AppContext = createContext<{
   addArrayItem: (path: string, item: any) => Promise<void>;
   deleteArrayItem: (path: string, item: any) => Promise<void>;
   deleteGalleryItem: (item: GalleryItem) => Promise<void>;
+  updateGalleryItem: (item: GalleryItem) => Promise<void>;
 } | null>(null);
 
 const App: React.FC = () => {
@@ -34,21 +35,26 @@ const App: React.FC = () => {
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch data from Firestore
-    const fetchData = async () => {
-      const docRef = doc(db, 'portfolio', 'mainData');
-      const docSnap = await getDoc(docRef);
-
+    // Set up a realtime listener for Firestore data
+    const docRef = doc(db, 'portfolio', 'mainData');
+    
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         setData(docSnap.data() as PortfolioData);
       } else {
         // Doc doesn't exist, so initialize it
         console.log('No such document! Initializing...');
-        await setDoc(docRef, initialData);
-        setData(initialData);
+        const initializeDoc = async () => {
+            await setDoc(docRef, initialData);
+        }
+        initializeDoc();
       }
-    };
-    fetchData();
+    }, (error) => {
+        console.error("Firebase snapshot error: ", error);
+    });
+
+    // Cleanup listener on component unmount
+    return () => unsubscribe();
   }, []);
   
   const setLang = (newLang: Language) => {
@@ -69,51 +75,20 @@ const App: React.FC = () => {
 
   const updateData = async (path: string, value: any) => {
     const docRef = doc(db, 'portfolio', 'mainData');
+    // Just update Firestore. The onSnapshot listener will handle the local state update.
     await updateDoc(docRef, { [path]: value });
-    setData(prevData => {
-        if (!prevData) return null;
-        const keys = path.split('.');
-        const newData = JSON.parse(JSON.stringify(prevData));
-        let current = newData;
-        for (let i = 0; i < keys.length - 1; i++) {
-            current = current[keys[i]];
-        }
-        current[keys[keys.length - 1]] = value;
-        return newData;
-    });
   };
   
   const addArrayItem = async (path: string, item: any) => {
       const docRef = doc(db, 'portfolio', 'mainData');
+      // Just update Firestore. The onSnapshot listener will handle the local state update.
       await updateDoc(docRef, { [path]: arrayUnion(item) });
-      // This is a simplified local update. For full sync, rely on Firestore snapshots.
-      setData(prevData => {
-          if (!prevData) return null;
-          const keys = path.split('.');
-          const newData = JSON.parse(JSON.stringify(prevData));
-          let current = newData;
-          for (let i = 0; i < keys.length - 1; i++) {
-              current = current[keys[i]];
-          }
-          current[keys[keys.length - 1]].push(item);
-          return newData;
-      });
   };
   
   const deleteArrayItem = async (path: string, item: any) => {
     const docRef = doc(db, 'portfolio', 'mainData');
+    // Just update Firestore. The onSnapshot listener will handle the local state update.
     await updateDoc(docRef, { [path]: arrayRemove(item) });
-    setData(prevData => {
-        if (!prevData) return null;
-        const keys = path.split('.');
-        const newData = JSON.parse(JSON.stringify(prevData));
-        let current = newData;
-        for (let i = 0; i < keys.length - 1; i++) {
-            current = current[keys[i]];
-        }
-        current[keys[keys.length - 1]] = current[keys[keys.length - 1]].filter((i: any) => i.id !== item.id);
-        return newData;
-    });
   };
 
   const deleteGalleryItem = async (item: GalleryItem) => {
@@ -131,6 +106,14 @@ const App: React.FC = () => {
     }
     // Delete item from Firestore array
     await deleteArrayItem('gallery', item);
+  };
+
+  const updateGalleryItem = async (updatedItem: GalleryItem) => {
+    if (!data) return;
+    const newGallery = data.gallery.map(item =>
+        item.id === updatedItem.id ? updatedItem : item
+    );
+    await updateData('gallery', newGallery);
   };
 
 
@@ -154,7 +137,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <AppContext.Provider value={{ lang, setLang, isAdmin, isEditing, setIsEditing, data, updateData, addArrayItem, deleteArrayItem, deleteGalleryItem }}>
+    <AppContext.Provider value={{ lang, setLang, isAdmin, isEditing, setIsEditing, data, updateData, addArrayItem, deleteArrayItem, deleteGalleryItem, updateGalleryItem }}>
       <div className="bg-teal-900 min-h-screen text-cyan-200 relative">
         <WeatherEffects />
         <div 

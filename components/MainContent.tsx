@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { AppContext } from '../App';
 import { Page, Evaluation, Goal } from '../types';
 import { translations } from '../data';
 import Section from './Section';
 import {
   UserIcon, EducationIcon, SparklesIcon, HeartIcon, RocketIcon,
-  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon, XIcon, PlusIcon
+  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon, XIcon, PlusIcon, PencilIcon
 } from './Icons';
 import Gallery from './Gallery';
 import Editable from './Editable';
@@ -16,7 +16,10 @@ import AddItemModal from './AddItemModal';
 const MainContent: React.FC<{ page: Page }> = ({ page }) => {
   const context = useContext(AppContext);
   if (!context || !context.data) return null;
-  const { lang, data, addArrayItem, isEditing, isAdmin, deleteArrayItem } = context;
+  const { lang, data, addArrayItem, isEditing, isAdmin, deleteArrayItem, updateData } = context;
+
+  // Ref for profile image input
+  const profileImageInputRef = useRef<HTMLInputElement>(null);
 
   // State for the generic add modal
   const [modalInfo, setModalInfo] = useState<{ path: string; type: 'skill' | 'volunteer' | 'goal', goalType?: 'short' | 'long' } | null>(null);
@@ -49,6 +52,28 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
     setEvalError('');
   };
 
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+        const base64String = await convertToBase64(file);
+        await updateData('studentInfo.profileImageUrl', base64String);
+    } catch (error) {
+        console.error("Error uploading profile image:", error);
+        alert("حدث خطأ أثناء رفع الصورة.");
+    }
+  };
+
   const renderContent = () => {
     switch (page) {
       case 'about':
@@ -58,7 +83,31 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='84' height='48' viewBox='0 0 84 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h12v12H0V0zm24 0h12v12H24V0zm48 0h12v12H72V0zm-36 24h12v12H36V24zm48 0h12v12H84V24zM0 24h12v12H0V24zm48-12h12v12H48V12zm-24 0h12v12H24V12zm24 24h12v12H48V36zm-24 0h12v12H24V36z' fill='%2314b8a6' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E")`,
             }}>
               <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 text-center md:text-start rtl:md:text-right">
-                <img src="https://picsum.photos/seed/green-nature/200/200" alt={data.studentInfo.name} className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-cyan-500 object-cover shadow-lg flex-shrink-0" />
+                <div className="relative flex-shrink-0">
+                  <img 
+                    src={data.studentInfo.profileImageUrl || "https://picsum.photos/seed/placeholder/200"} 
+                    alt={data.studentInfo.name} 
+                    className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-cyan-500 object-cover shadow-lg" 
+                  />
+                  {isEditing && (
+                    <>
+                      <button
+                        onClick={() => profileImageInputRef.current?.click()}
+                        className="absolute bottom-0 right-0 md:bottom-2 md:right-2 bg-cyan-500 text-black rounded-full p-2 hover:bg-cyan-400 transition-colors shadow-lg"
+                        aria-label="تغيير الصورة الشخصية"
+                      >
+                        <PencilIcon className="w-5 h-5 md:w-6 md:h-6" />
+                      </button>
+                      <input
+                        type="file"
+                        ref={profileImageInputRef}
+                        onChange={handleProfileImageChange}
+                        className="hidden"
+                        accept="image/*"
+                      />
+                    </>
+                  )}
+                </div>
                 <div className="flex-1">
                   <Editable
                     value={data.studentInfo.name}

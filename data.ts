@@ -9,7 +9,8 @@ export const initialData: PortfolioData = {
     about: {
       ar: "طالب طموح في الصف الأول المتوسط، شغوف بالمعرفة ومحب للاستكشاف. أسعى دائمًا لتطوير مهاراتي الأكاديمية والشخصية، مع تركيز خاص على الرياضيات التي أجد فيها متعة وتحديًا، وكرة القدم التي تعلمني أهمية العمل الجماعي والمثابرة. أؤمن بأن التعلم رحلة مستمرة لا تتوقف عند حدود الفصل الدراسي، وهذا الملف هو مرآة لجهودي وإنجازاتي، وقصة شغفي نحو تحقيق أهدافي. كل يوم هو فرصة جديدة لأكون أفضل من الأمس، وبالعزيمة والإصرار، لا يوجد شيء اسمه مستحيل.",
       en: "An ambitious first-intermediate grade student, passionate about knowledge and eager to explore. I am always striving to develop my academic and personal skills, with a special focus on mathematics, which I find both fun and challenging, and football, which teaches me the importance of teamwork and perseverance. I believe that learning is a continuous journey that doesn't stop at the classroom's borders, and this portfolio is a reflection of my efforts, my achievements, and the story of my passion towards achieving my goals. I believe that every day is a new opportunity to be better than I was yesterday, and with determination and persistence, nothing is impossible."
-    }
+    },
+    profileImageUrl: 'https://picsum.photos/seed/faisal-profile/200/200',
   },
   education: [
     { id: 'edu1', degree: { ar: 'المرحلة الابتدائية', en: 'Elementary School' }, institution: { ar: 'منارات جدة', en: 'Manarat Jeddah Schools' }, years: '2017 - 2023' },
@@ -64,7 +65,7 @@ export const translations: Translations = {
     volunteer: { ar: "الأعمال التطوعية", en: "Volunteer Work" },
     goals: { ar: "الأهداف", en: "Goals" },
     gallery: { ar: "معرض أعمالي", en: "Gallery" },
-    evaluations: { ar: "تقييمات", en: "Evaluations" },
+    evaluations: { ar: "التعليقات", en: "Evaluations" },
     community: { ar: "شاركونا إنجازاتكم", en: "Share Your Achievements" },
     entertainment: { ar: "القسم الترفيهي", en: "Entertainment Section" }
   },
@@ -89,13 +90,13 @@ export const translations: Translations = {
   recentAchievements: { ar: "أحدث الإنجازات", en: "Latest Achievements" },
   noAchievementsYet: { ar: "لا توجد إنجازات بعد. كن أول من يشارك!", en: "No achievements yet. Be the first to share!" },
   errorAllFieldsRequired: { ar: "الرجاء ملء جميع الحقول.", en: "Please fill in all fields." },
-  addYourEvaluation: { ar: "أضف تقييمك", en: "Add Your Evaluation" },
+  addYourEvaluation: { ar: "أضف تعليق", en: "Add Your Evaluation" },
   yourRole: { ar: "صفتك (مثال: معلم، مدرب)", en: "Your Role (e.g., Teacher, Coach)" },
   yourRolePlaceholder: { ar: "مثال: معلم الرياضيات", en: "e.g., Math Teacher" },
-  yourComment: { ar: "التقييم", en: "The Evaluation" },
+  yourComment: { ar: "التعليق", en: "The Evaluation" },
   yourCommentPlaceholder: { ar: "فيصل طالب مجتهد...", en: "Faisal is a diligent student..." },
-  submitEvaluation: { ar: "أرسل التقييم", en: "Submit Evaluation" },
-  noEvaluationsYet: { ar: "لا توجد تقييمات بعد. كن أول من يضيف تقييماً!", en: "No evaluations yet. Be the first to add one!" },
+  submitEvaluation: { ar: "أرسل التعليق", en: "Submit Evaluation" },
+  noEvaluationsYet: { ar: "لا توجد تعليقات بعد. كن أول من يضيف تعليقاً!", en: "No evaluations yet. Be the first to add one!" },
   runWithFaisalTitle: { ar: "اركض مع فيصل", en: "Run with Faisal" },
   runWithFaisalInstructions: { ar: "اضغط على 'مسافة' للقفز فوق العقبات.", en: "Press 'Spacebar' to jump over the obstacles." },
   myPathToSuccess: { ar: "طريقي نحو النجاح", en: "My Path to Success" },

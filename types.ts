@@ -13,6 +13,7 @@ export interface StudentInfo {
   school: string;
   email: string;
   about: Translatable;
+  profileImageUrl?: string;
 }
 
 export interface EducationItem {
