@@ -1,17 +1,18 @@
+
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../App';
 import { Page, Evaluation } from '../types';
 import { translations } from '../data';
 import Section from './Section';
 import {
-  UserIcon, EducationIcon, SparklesIcon, HeartIcon, FlagIcon, RocketIcon,
-  GalleryIcon, ProjectIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon,
-  FootballIcon, CalculatorIcon, BookIcon, PuzzleIcon, CodeIcon, ChessIcon
+  UserIcon, EducationIcon, SparklesIcon, HeartIcon, RocketIcon,
+  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon
 } from './Icons';
 import Gallery from './Gallery';
 import GuessTheAchievementGame from './GuessTheAchievementGame';
 import Editable from './Editable';
 import CommunityAchievements from './CommunityAchievements';
+import EntertainmentSection from './EntertainmentSection';
 
 const MainContent: React.FC<{ page: Page }> = ({ page }) => {
   const context = useContext(AppContext);
@@ -143,31 +144,6 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
           </Section>
         );
       
-      case 'hobbies':
-        return (
-          <Section title={translations.nav.hobbies[lang]} icon={<FlagIcon />}>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 text-center">
-              {data.hobbies.map((hobby, index) => (
-                <div key={hobby.id} className="bg-teal-800 p-6 rounded-lg border border-teal-700 hover:border-cyan-500 hover:scale-105 transition-all duration-300">
-                  <div className="w-16 h-16 mx-auto text-cyan-400">
-                    {hobby.icon === 'football' && <FootballIcon />}
-                    {hobby.icon === 'calculator' && <CalculatorIcon />}
-                    {hobby.icon === 'book' && <BookIcon />}
-                    {hobby.icon === 'code' && <CodeIcon />}
-                    {hobby.icon === 'chess' && <ChessIcon />}
-                  </div>
-                   <Editable 
-                     value={hobby.name[lang]} 
-                     onSave={v => handleDataChange(`hobbies.${index}.name.${lang}`, v)} 
-                     tag="h3"
-                     className="mt-4 text-xl font-bold"
-                    />
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      
       case 'goals':
         return (
           <Section title={translations.nav.goals[lang]} icon={<RocketIcon />}>
@@ -206,23 +182,6 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
         return (
           <Section title={translations.nav.gallery[lang]} icon={<GalleryIcon />}>
             <Gallery />
-          </Section>
-        );
-
-      case 'project':
-        const project = data.featuredProject;
-        return (
-          <Section title={translations.nav.project[lang]} icon={<ProjectIcon />}>
-            <div className="bg-teal-800 rounded-lg overflow-hidden shadow-lg border border-teal-700">
-              <img src={project.imageUrl} alt={project.title[lang]} className="w-full h-64 md:h-96 object-cover" />
-              <div className="p-8">
-                <Editable value={project.title[lang]} onSave={v => handleDataChange(`featuredProject.title.${lang}`, v)} tag="h2" className="text-4xl font-black text-cyan-400 mb-2" />
-                <Editable value={project.description[lang]} onSave={v => handleDataChange(`featuredProject.description.${lang}`, v)} tag="p" as="textarea" className="text-lg text-cyan-300 mb-6" />
-                <div className="prose prose-invert max-w-none text-cyan-200">
-                   <Editable value={project.details[lang]} onSave={v => handleDataChange(`featuredProject.details.${lang}`, v)} as="textarea" tag="div" />
-                </div>
-              </div>
-            </div>
           </Section>
         );
 
@@ -298,17 +257,17 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
           </Section>
         );
         
-      case 'game':
-        return (
-          <Section title={translations.nav.game[lang]} icon={<PuzzleIcon />}>
-            <GuessTheAchievementGame />
-          </Section>
-        );
-      
       case 'community':
         return (
           <Section title={translations.nav.community[lang]} icon={<CommunityIcon />}>
             <CommunityAchievements />
+          </Section>
+        );
+      
+      case 'entertainment':
+        return (
+          <Section title={translations.nav.entertainment[lang]} icon={<GameControllerIcon />}>
+            <EntertainmentSection />
           </Section>
         );
 
@@ -321,7 +280,7 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
 };
 
 const Section: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <section className="mb-16 animate-fade-in">
+  <section className="mb-12 md:mb-16 animate-fade-in">
     <div className="flex items-center gap-4 mb-8">
       <div className="text-cyan-400 w-10 h-10">{icon}</div>
       <h2 className="text-3xl md:text-4xl font-black text-white border-b-2 border-cyan-500 pb-2">{title}</h2>

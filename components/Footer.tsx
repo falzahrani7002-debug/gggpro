@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
         </div>
         <p className="mt-6 text-sm">
           &copy; {new Date().getFullYear()} {data.studentInfo.name}. {translations.allRightsReserved[lang]}.
-        p>
+        </p>
       </div>
     </footer>
   );

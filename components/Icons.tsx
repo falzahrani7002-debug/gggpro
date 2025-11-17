@@ -72,6 +72,13 @@ export const GiftIcon: React.FC<{ className?: string }> = ({ className }) => (
       <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25c0-1.5 1.5-2.25 3-2.25S13.5 3.75 13.5 5.25" />
   </IconWrapper>
 );
+export const GameControllerIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M11 18.571a14.88 14.88 0 005.143-1.071M16.143 17.5a14.88 14.88 0 00-5.143 1.071M11 18.571V15M16.143 17.5V15M5.857 15H4a1 1 0 01-1-1V7a1 1 0 011-1h1.857M5.857 15h4.286M5.857 15L8 12.857M10.143 15L8 12.857m2.143-2.857H12m6.143 2.857h1.857a1 1 0 001-1V7a1 1 0 00-1-1h-1.857m-4.286 8.571h4.286m0 0L16 12.857m-2.143 2.857L16 12.857m-2.143-2.857H14m-4 0h2m-4 0L8 10.143M8 12.857L8 10.143m0 0L6 8h2m6 0h2l2 2.143M12 10.143V8m0 0h-2" /></IconWrapper>
+);
+export const PencilIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></IconWrapper>
+);
+
 
 // Hobby Icons
 export const FootballIcon: React.FC<{ className?: string }> = ({ className }) => (

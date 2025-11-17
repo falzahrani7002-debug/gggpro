@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
           </div>
           
           <nav className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-6 rtl:space-x-reverse">
+            <div className="ml-10 flex items-baseline flex-wrap gap-x-6 gap-y-2">
               {navLinks.map((link) => (
                 <a
                   key={link.key}
@@ -62,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
             </div>
           </nav>
 
-          <div className="hidden md:flex items-center space-x-4 rtl:space-x-reverse">
+          <div className="hidden md:flex items-center space-x-8 rtl:space-x-reverse">
             <button onClick={toggleLanguage} className="text-cyan-200 hover:text-white font-semibold py-2 px-3 border border-teal-600 rounded-md transition-colors duration-300 hover:bg-teal-700">
               {lang === 'ar' ? 'EN' : 'AR'}
             </button>
