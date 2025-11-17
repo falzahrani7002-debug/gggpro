@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
   return (
     <header className="fixed top-0 left-0 right-0 bg-black bg-opacity-80 backdrop-blur-md z-40 shadow-lg shadow-cyan-500/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 md:h-20">
           <div className="flex-shrink-0">
             <h1 className="text-2xl font-bold text-cyan-400 cursor-pointer" onClick={() => setActivePage('about')}>
               {translations.siteTitle[lang]}

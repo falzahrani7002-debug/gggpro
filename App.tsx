@@ -80,7 +80,7 @@ const App: React.FC = () => {
         
         <Header activePage={activePage} setActivePage={setActivePage} onAdminClick={() => setLoginModalOpen(true)} />
         
-        <main className="pt-40 pb-20 px-6 md:px-12 lg:px-24 relative z-10">
+        <main className="pt-24 md:pt-28 pb-20 px-4 sm:px-6 md:px-12 lg:px-24 relative z-10">
           <MainContent page={activePage} />
         </main>
         

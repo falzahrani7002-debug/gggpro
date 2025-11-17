@@ -68,29 +68,29 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
       case 'about':
         return (
           <Section title={translations.nav.about[lang]} icon={<UserIcon />}>
-            <div className="bg-teal-800 p-8 rounded-lg border border-teal-700 shadow-inner" style={{
+            <div className="bg-teal-800 p-6 md:p-8 rounded-lg border border-teal-700 shadow-inner" style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='84' height='48' viewBox='0 0 84 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h12v12H0V0zm24 0h12v12H24V0zm48 0h12v12H72V0zm-36 24h12v12H36V24zm48 0h12v12H84V24zM0 24h12v12H0V24zm48-12h12v12H48V12zm-24 0h12v12H24V12zm24 24h12v12H48V36zm-24 0h12v12H24V36z' fill='%2314b8a6' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E")`,
             }}>
-              <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-start rtl:md:text-right">
-                <img src="https://picsum.photos/seed/green-nature/200/200" alt={data.studentInfo.name} className="w-48 h-48 rounded-full border-4 border-cyan-500 object-cover shadow-lg" />
+              <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 text-center md:text-start rtl:md:text-right">
+                <img src="https://picsum.photos/seed/green-nature/200/200" alt={data.studentInfo.name} className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-cyan-500 object-cover shadow-lg flex-shrink-0" />
                 <div className="flex-1">
                   <Editable
                     value={data.studentInfo.name}
                     onSave={(newValue) => handleDataChange('studentInfo.name', newValue)}
                     tag="h2"
-                    className="text-4xl font-black text-cyan-400"
+                    className="text-3xl sm:text-4xl font-black text-cyan-400"
                   />
                   <div className="text-xl text-cyan-300 mt-1">
                     <Editable
                       value={data.studentInfo.grade[lang]}
                       onSave={(newValue) => handleDataChange(`studentInfo.grade.${lang}`, newValue)}
                       tag="span"
-                      className="text-xl text-cyan-300"
+                      className="text-lg md:text-xl text-cyan-300"
                     /> @ <Editable
                       value={data.studentInfo.school}
                       onSave={(newValue) => handleDataChange('studentInfo.school', newValue)}
                       tag="span"
-                      className="text-xl text-cyan-300"
+                      className="text-lg md:text-xl text-cyan-300"
                     />
                   </div>
                    <Editable

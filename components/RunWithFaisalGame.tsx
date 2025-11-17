@@ -1,9 +1,9 @@
+
 import React, { useState, useEffect, useCallback, useRef, useContext } from 'react';
 import { AppContext } from '../App';
 import { translations } from '../data';
 import { BookIcon, FootballIcon, PencilIcon } from './Icons';
 
-const GAME_WIDTH = 800;
 const GAME_HEIGHT = 300;
 const FAISAL_WIDTH = 40;
 const FAISAL_HEIGHT = 60;
@@ -27,22 +27,40 @@ const RunWithFaisalGame: React.FC = () => {
     const [velocityY, setVelocityY] = useState(0);
     const [obstacles, setObstacles] = useState<{ id: number; x: number; typeIndex: number }[]>([]);
     const [score, setScore] = useState(0);
+    const [gameWidth, setGameWidth] = useState(800);
 
-    // FIX: Initialize useRef with null to provide an initial value and fix type error.
+    const gameContainerRef = useRef<HTMLDivElement>(null);
     const gameLoopRef = useRef<number | null>(null);
-    // FIX: Replaced NodeJS.Timeout with ReturnType<typeof setInterval> for browser compatibility.
-    // FIX: Initialize useRef with null to provide an initial value and fix type error.
     const obstacleTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+     useEffect(() => {
+        const container = gameContainerRef.current;
+        if (!container) return;
+        
+        const resizeObserver = new ResizeObserver(entries => {
+            if (entries[0]) {
+                const { width } = entries[0].contentRect;
+                setGameWidth(width);
+            }
+        });
+
+        resizeObserver.observe(container);
+
+        // Set initial width
+        setGameWidth(container.clientWidth);
+
+        return () => resizeObserver.disconnect();
+    }, []);
 
     const spawnObstacle = useCallback(() => {
         const typeIndex = Math.floor(Math.random() * obstacleTypes.length);
         const newObstacle = {
             id: Date.now(),
-            x: GAME_WIDTH,
+            x: gameWidth,
             typeIndex,
         };
         setObstacles(prev => [...prev, newObstacle]);
-    }, []);
+    }, [gameWidth]);
 
     const startGame = () => {
         setFaisalY(GROUND_Y);
@@ -50,14 +68,17 @@ const RunWithFaisalGame: React.FC = () => {
         setObstacles([]);
         setScore(0);
         setStatus('running');
-        spawnObstacle();
+        // Spawn first obstacle slightly delayed to give player time to react
+        setTimeout(spawnObstacle, 500);
     };
 
     const jump = useCallback(() => {
         if (status === 'running' && faisalY >= GROUND_Y) {
             setVelocityY(JUMP_FORCE);
+        } else if (status === 'idle' || status === 'over') {
+            startGame();
         }
-    }, [status, faisalY]);
+    }, [status, faisalY, startGame]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -85,7 +106,8 @@ const RunWithFaisalGame: React.FC = () => {
 
         // Obstacle movement and collision
         let collision = false;
-        const newObstacles = obstacles.map(obs => ({ ...obs, x: obs.x - 5 - (score / 100) })).filter(obs => obs.x > -50);
+        const speed = Math.max(3, gameWidth / 160);
+        const newObstacles = obstacles.map(obs => ({ ...obs, x: obs.x - (speed + (score / 200)) })).filter(obs => obs.x > -50);
         
         const faisalRect = { x: 50, y: newFaisalY, width: FAISAL_WIDTH, height: FAISAL_HEIGHT };
 
@@ -111,12 +133,14 @@ const RunWithFaisalGame: React.FC = () => {
         }
 
         gameLoopRef.current = requestAnimationFrame(gameTick);
-    }, [status, faisalY, velocityY, obstacles, score]);
+    }, [status, faisalY, velocityY, obstacles, score, gameWidth]);
     
     useEffect(() => {
         if (status === 'running') {
             gameLoopRef.current = requestAnimationFrame(gameTick);
-            obstacleTimerRef.current = setInterval(spawnObstacle, 2000);
+            // Dynamic obstacle spawn rate based on screen width, making it feel more consistent
+            const spawnInterval = Math.max(1200, gameWidth * 2.5);
+            obstacleTimerRef.current = setInterval(spawnObstacle, spawnInterval);
         } else {
             if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
             if (obstacleTimerRef.current) clearInterval(obstacleTimerRef.current);
@@ -125,18 +149,23 @@ const RunWithFaisalGame: React.FC = () => {
             if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
             if (obstacleTimerRef.current) clearInterval(obstacleTimerRef.current);
         };
-    }, [status, gameTick, spawnObstacle]);
+    }, [status, gameTick, spawnObstacle, gameWidth]);
 
     return (
-        <div className="bg-teal-800 p-6 rounded-lg border border-teal-700">
-            <h3 className="text-3xl font-bold text-center text-cyan-300 mb-4">{translations.runWithFaisalTitle[lang]}</h3>
+        <div className="bg-teal-800 p-4 md:p-6 rounded-lg border border-teal-700">
+            <h3 className="text-2xl md:text-3xl font-bold text-center text-cyan-300 mb-4">{translations.runWithFaisalTitle[lang]}</h3>
             <div
-                className="relative bg-teal-900 rounded-md overflow-hidden border-2 border-teal-600 w-full max-w-[800px] mx-auto"
+                ref={gameContainerRef}
+                className="relative bg-teal-900 rounded-md overflow-hidden border-2 border-teal-600 w-full max-w-[800px] mx-auto touch-manipulation cursor-pointer"
                 style={{ height: `${GAME_HEIGHT}px` }}
                 onClick={jump}
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') jump(); }}
+                aria-label={translations.runWithFaisalTitle[lang]}
             >
                 <div className="absolute bottom-0 left-0 w-full h-1 bg-cyan-400"></div>
-                <div className="absolute bottom-1 right-4 text-cyan-400 font-black text-2xl opacity-20">{translations.myPathToSuccess[lang]}</div>
+                <div className="absolute bottom-1 right-4 text-cyan-400 font-black text-xl md:text-2xl opacity-20 select-none">{translations.myPathToSuccess[lang]}</div>
                 
                 {/* Faisal Character */}
                 <div style={{ 
@@ -169,10 +198,10 @@ const RunWithFaisalGame: React.FC = () => {
 
                 {/* UI Overlays */}
                 {status !== 'running' && (
-                    <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white z-10">
+                    <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white z-10 p-4">
                         {status === 'idle' && (
                             <>
-                                <p className="text-xl mb-4">{translations.runWithFaisalInstructions[lang]}</p>
+                                <p className="text-lg md:text-xl mb-4 text-center">{translations.runWithFaisalInstructions[lang]}</p>
                                 <button onClick={startGame} className="bg-cyan-500 text-black font-bold py-3 px-8 rounded-md text-lg hover:bg-cyan-400 transition-colors">
                                     {lang === 'ar' ? 'ابدأ' : 'Start'}
                                 </button>
@@ -180,8 +209,8 @@ const RunWithFaisalGame: React.FC = () => {
                         )}
                         {status === 'over' && (
                             <>
-                                <h4 className="text-4xl font-bold text-red-500">{translations.gameOver[lang]}</h4>
-                                <p className="text-2xl mt-2">{translations.score[lang]}: {Math.floor(score/10)}</p>
+                                <h4 className="text-3xl md:text-4xl font-bold text-red-500">{translations.gameOver[lang]}</h4>
+                                <p className="text-xl md:text-2xl mt-2">{translations.score[lang]}: {Math.floor(score/10)}</p>
                                 <button onClick={startGame} className="mt-6 bg-cyan-500 text-black font-bold py-3 px-8 rounded-md text-lg hover:bg-cyan-400 transition-colors">
                                     {translations.playAgain[lang]}
                                 </button>
@@ -189,7 +218,7 @@ const RunWithFaisalGame: React.FC = () => {
                         )}
                     </div>
                 )}
-                 <div className="absolute top-2 right-2 text-xl font-bold text-white z-20">
+                 <div className="absolute top-2 right-2 text-lg md:text-xl font-bold text-white z-20">
                     {translations.score[lang]}: {status === 'running' ? Math.floor(score / 10) : 0}
                 </div>
             </div>
