@@ -1,11 +1,12 @@
+
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../App';
 import { XIcon } from './Icons';
-import { Skill, VolunteerWork, Goal } from '../types';
+import { Skill, VolunteerWork, Goal, EducationItem } from '../types';
 
 interface AddItemModalProps {
   path: string;
-  type: 'skill' | 'volunteer' | 'goal';
+  type: 'skill' | 'volunteer' | 'goal' | 'education';
   onClose: () => void;
   goalType?: 'short' | 'long'; // Specific for goals
 }
@@ -21,6 +22,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ path, type, onClose, goalTy
     if (type === 'skill') setFormData({ nameAr: '', nameEn: '', level: 50 });
     if (type === 'volunteer') setFormData({ orgAr: '', orgEn: '', roleAr: '', roleEn: '', descAr: '', descEn: '', years: '' });
     if (type === 'goal') setFormData({ textAr: '', textEn: '' });
+    if (type === 'education') setFormData({ degreeAr: '', degreeEn: '', instAr: '', instEn: '', years: '' });
   }, [type]);
 
   if (!context) return null;
@@ -58,6 +60,14 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ path, type, onClose, goalTy
           text: { ar: formData.textAr, en: formData.textEn },
           type: goalType
         } as Goal;
+      } else if (type === 'education') {
+        if (!formData.degreeAr || !formData.degreeEn || !formData.instAr || !formData.instEn || !formData.years) { throw new Error("الرجاء ملء جميع الحقول المطلوبة."); }
+        newItem = {
+            id,
+            degree: { ar: formData.degreeAr, en: formData.degreeEn },
+            institution: { ar: formData.instAr, en: formData.instEn },
+            years: formData.years
+        } as EducationItem;
       } else {
         throw new Error("نوع عنصر غير صالح");
       }
@@ -92,6 +102,31 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ path, type, onClose, goalTy
             <div>
               <label className="block mb-1 ruqaa-label">المستوى: {formData.level || 50}%</label>
               <input type="range" name="level" min="0" max="100" value={formData.level || 50} onChange={handleInputChange} className="w-full h-2 bg-teal-700 rounded-lg appearance-none cursor-pointer" />
+            </div>
+          </>
+        );
+      case 'education':
+        return (
+          <>
+            <div>
+              <label className="block mb-1 ruqaa-label">المؤهل (عربي)</label>
+              <input name="degreeAr" value={formData.degreeAr || ''} onChange={handleInputChange} className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2 diwani-input" />
+            </div>
+            <div>
+              <label className="block mb-1 ruqaa-label">Degree (English)</label>
+              <input name="degreeEn" value={formData.degreeEn || ''} onChange={handleInputChange} className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2" />
+            </div>
+            <div>
+              <label className="block mb-1 ruqaa-label">المؤسسة التعليمية (عربي)</label>
+              <input name="instAr" value={formData.instAr || ''} onChange={handleInputChange} className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2 diwani-input" />
+            </div>
+            <div>
+              <label className="block mb-1 ruqaa-label">Institution (English)</label>
+              <input name="instEn" value={formData.instEn || ''} onChange={handleInputChange} className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2" />
+            </div>
+            <div>
+              <label className="block mb-1 ruqaa-label">السنوات</label>
+              <input name="years" value={formData.years || ''} placeholder="مثال: 2017 - 2023" className="w-full bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-3 py-2" />
             </div>
           </>
         );
@@ -149,6 +184,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ path, type, onClose, goalTy
   const titles = {
       skill: 'إضافة مهارة جديدة',
       volunteer: 'إضافة عمل تطوعي جديد',
+      education: 'إضافة مؤهل تعليمي جديد',
       goal: `إضافة هدف ${goalType === 'short' ? 'قصير' : 'طويل'} المدى`
   }
 

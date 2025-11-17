@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../App';
 import { translations } from '../data';
 import { db } from '../firebase-config';
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { XIcon } from './Icons';
 
 interface CommunityAchievement {
   id: string;
@@ -14,7 +16,7 @@ interface CommunityAchievement {
 const CommunityAchievements: React.FC = () => {
     const context = useContext(AppContext);
     if (!context) return null;
-    const { lang } = context;
+    const { lang, isAdmin, isEditing, deleteCommunityAchievement } = context;
 
     const [achievements, setAchievements] = useState<CommunityAchievement[]>([]);
     const [name, setName] = useState('');
@@ -102,7 +104,16 @@ const CommunityAchievements: React.FC = () => {
                 <div className="space-y-6">
                     {achievements.length > 0 ? (
                         achievements.map(item => (
-                            <div key={item.id} className="bg-teal-800 p-5 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in">
+                            <div key={item.id} className="bg-teal-800 p-5 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in relative group">
+                                {isAdmin && isEditing && (
+                                    <button
+                                        onClick={() => deleteCommunityAchievement(item.id)}
+                                        className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-10 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100"
+                                        aria-label="Delete achievement"
+                                    >
+                                        <XIcon className="w-4 h-4" />
+                                    </button>
+                                )}
                                 <p className="text-lg text-cyan-200 mb-3 whitespace-pre-wrap">{item.achievement}</p>
                                 <div className="text-sm text-cyan-400 font-semibold text-right rtl:text-left">
                                     - {item.name}

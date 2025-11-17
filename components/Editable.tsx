@@ -3,22 +3,22 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import { AppContext } from '../App';
 
 interface EditableProps {
-  value: string;
-  fieldPath: string;
+  value: string | number;
+  onSave: (newValue: string) => void;
   as?: 'textarea' | 'input';
   className?: string;
   style?: React.CSSProperties;
   tag?: React.ElementType;
 }
 
-const Editable: React.FC<EditableProps> = ({ value, fieldPath, as = 'input', className, tag: Tag = 'span', style }) => {
+const Editable: React.FC<EditableProps> = ({ value, onSave, as = 'input', className, tag: Tag = 'span', style }) => {
   const context = useContext(AppContext);
   const [isEditingThis, setIsEditingThis] = useState(false);
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(String(value));
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setInputValue(value);
+    setInputValue(String(value));
   }, [value]);
 
   useEffect(() => {
@@ -28,15 +28,15 @@ const Editable: React.FC<EditableProps> = ({ value, fieldPath, as = 'input', cla
     }
   }, [isEditingThis]);
   
-  const { isAdmin, isEditing, lang, updateData } = context || {};
+  const { isAdmin, isEditing, lang } = context || {};
   
   if (!isAdmin || !isEditing) {
     return <Tag className={className} style={style}>{value}</Tag>;
   }
 
   const handleSave = () => {
-    if (inputValue !== value) {
-      updateData?.(fieldPath, inputValue);
+    if (inputValue !== String(value)) {
+      onSave(inputValue);
     }
     setIsEditingThis(false);
   };
@@ -46,7 +46,7 @@ const Editable: React.FC<EditableProps> = ({ value, fieldPath, as = 'input', cla
       e.preventDefault();
       handleSave();
     } else if (e.key === 'Escape') {
-      setInputValue(value);
+      setInputValue(String(value));
       setIsEditingThis(false);
     }
   };
@@ -74,7 +74,7 @@ const Editable: React.FC<EditableProps> = ({ value, fieldPath, as = 'input', cla
       title="Click to edit"
       style={style}
     >
-      {value || (lang === 'ar' ? 'أضف قيمة...' : 'Add value...')}
+      {String(value) || (lang === 'ar' ? 'أضف قيمة...' : 'Add value...')}
     </Tag>
   );
 };

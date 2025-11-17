@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
   const context = useContext(AppContext);
   if (!context || !context.data) return null;
 
-  const { lang, data } = context;
+  const { lang, data, updateData } = context;
 
   return (
     <footer className="bg-black border-t border-cyan-500/20 py-8">
@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
           <a href={`mailto:${data.studentInfo.email}`}>
             <Editable
               value={data.studentInfo.email}
-              fieldPath="studentInfo.email"
+              onSave={(newValue) => updateData('studentInfo.email', newValue)}
               tag="span"
               className="text-lg"
             />

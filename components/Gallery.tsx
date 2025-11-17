@@ -10,7 +10,7 @@ import Editable from './Editable';
 const Gallery: React.FC = () => {
   const context = useContext(AppContext);
   if (!context || !context.data) return null;
-  const { lang, data, isAdmin, isEditing, deleteGalleryItem } = context;
+  const { lang, data, isAdmin, isEditing, deleteGalleryItem, updateGalleryItem } = context;
 
   const [typeFilter, setTypeFilter] = useState<GalleryItem['type'] | 'all'>('all');
   const [yearFilter, setYearFilter] = useState<number | 'all'>('all');
@@ -37,7 +37,15 @@ const Gallery: React.FC = () => {
       </button>
   );
 
-  const getOriginalIndex = (itemId: string) => data.gallery.findIndex(g => g.id === itemId);
+  const getImageSrc = (item: GalleryItem) => {
+    if (item.type === 'image' || item.type === 'pdf') {
+        return item.url;
+    }
+    if (item.type === 'video') {
+        return item.thumbnailUrl || 'https://picsum.photos/seed/placeholder-video/800/600';
+    }
+    return 'https://picsum.photos/seed/placeholder-other/800/600';
+  }
 
   return (
     <div>
@@ -71,7 +79,6 @@ const Gallery: React.FC = () => {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredItems.map(item => {
-          const originalIndex = getOriginalIndex(item.id);
           return (
           <div key={item.id} className="group relative overflow-hidden rounded-lg shadow-lg bg-teal-800 border border-teal-700">
             {isAdmin && isEditing && (
@@ -92,12 +99,14 @@ const Gallery: React.FC = () => {
                 </button>
               </div>
             )}
-            <a href={item.url} target="_blank" rel="noopener noreferrer">
-              <img
-                src={item.thumbnailUrl || (item.type === 'image' && item.url.startsWith('data:image')) ? item.url : 'https://picsum.photos/seed/placeholder/800/600'}
-                alt={item.title[lang]}
-                className="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300"
-              />
+            <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+              <div className="w-full h-56 bg-teal-900 flex items-center justify-center">
+                <img
+                  src={getImageSrc(item)}
+                  alt={item.title[lang]}
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
               <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="text-white text-3xl">
                     {item.type === 'image' && <ImageIcon />}
@@ -107,13 +116,13 @@ const Gallery: React.FC = () => {
               </div>
               <div className="p-4">
                 <h3 className="font-bold text-lg text-cyan-400 truncate">
-                  <Editable value={item.title[lang]} fieldPath={`gallery.${originalIndex}.title.${lang}`} tag="span" />
+                  <Editable value={item.title[lang]} onSave={(newValue) => updateGalleryItem({ ...item, title: { ...item.title, [lang]: newValue } })} tag="span" />
                 </h3>
                 <p className="text-sm text-cyan-300">
-                  <Editable value={item.description[lang]} fieldPath={`gallery.${originalIndex}.description.${lang}`} tag="span" />
+                  <Editable value={item.description[lang]} onSave={(newValue) => updateGalleryItem({ ...item, description: { ...item.description, [lang]: newValue } })} tag="span" />
                 </p>
                 <span className="absolute top-2 left-2 rtl:left-auto rtl:right-2 bg-cyan-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
-                  <Editable value={String(item.year)} fieldPath={`gallery.${originalIndex}.year`} tag="span" />
+                  <Editable value={String(item.year)} onSave={(newValue) => updateGalleryItem({ ...item, year: parseInt(newValue, 10) || item.year })} tag="span" />
                 </span>
               </div>
             </a>

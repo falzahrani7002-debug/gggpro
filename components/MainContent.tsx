@@ -1,6 +1,7 @@
+
 import React, { useState, useContext, useRef } from 'react';
 import { AppContext } from '../App';
-import { Page, Evaluation, Goal } from '../types';
+import { Page, Evaluation, Goal, EducationItem, Skill, VolunteerWork } from '../types';
 import { translations } from '../data';
 import Section from './Section';
 import {
@@ -16,13 +17,21 @@ import AddItemModal from './AddItemModal';
 const MainContent: React.FC<{ page: Page }> = ({ page }) => {
   const context = useContext(AppContext);
   if (!context || !context.data) return null;
-  const { lang, data, addArrayItem, isEditing, isAdmin, deleteArrayItem, updateData } = context;
+  const { 
+    lang, data, isEditing, isAdmin, 
+    updateData, addArrayItem, deleteArrayItem, 
+    updateEducationItem, updateSkill, updateVolunteerWork, updateGoal, updateEvaluation 
+  } = context;
 
   // Ref for profile image input
   const profileImageInputRef = useRef<HTMLInputElement>(null);
 
   // State for the generic add modal
-  const [modalInfo, setModalInfo] = useState<{ path: string; type: 'skill' | 'volunteer' | 'goal', goalType?: 'short' | 'long' } | null>(null);
+  const [modalInfo, setModalInfo] = useState<{ 
+    path: string; 
+    type: 'skill' | 'volunteer' | 'goal' | 'education', 
+    goalType?: 'short' | 'long' 
+  } | null>(null);
 
   // State for evaluation form
   const [evalAuthor, setEvalAuthor] = useState('');
@@ -111,26 +120,26 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                 <div className="flex-1">
                   <Editable
                     value={data.studentInfo.name}
-                    fieldPath="studentInfo.name"
+                    onSave={(newValue) => updateData('studentInfo.name', newValue)}
                     tag="h2"
                     className="text-3xl sm:text-4xl font-black text-cyan-400"
                   />
                   <div className="text-xl text-cyan-300 mt-1">
                     <Editable
                       value={data.studentInfo.grade[lang]}
-                      fieldPath={`studentInfo.grade.${lang}`}
+                      onSave={(newValue) => updateData(`studentInfo.grade.${lang}`, newValue)}
                       tag="span"
                       className="text-lg md:text-xl text-cyan-300"
                     /> @ <Editable
                       value={data.studentInfo.school}
-                      fieldPath="studentInfo.school"
+                      onSave={(newValue) => updateData('studentInfo.school', newValue)}
                       tag="span"
                       className="text-lg md:text-xl text-cyan-300"
                     />
                   </div>
                    <Editable
                       value={data.studentInfo.about[lang]}
-                      fieldPath={`studentInfo.about.${lang}`}
+                      onSave={(newValue) => updateData(`studentInfo.about.${lang}`, newValue)}
                       tag="p"
                       as="textarea"
                       className="mt-4 text-cyan-200 ruqaa-text"
@@ -144,12 +153,24 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
       case 'education':
         return (
           <Section title={translations.nav.education[lang]} icon={<EducationIcon />}>
-            <Timeline items={data.education.map((item, index) => ({
+            <Timeline items={data.education.map((item) => ({
               id: item.id,
-              title: <Editable value={item.degree[lang]} fieldPath={`education.${index}.degree.${lang}`} tag="span" />,
-              subtitle: <Editable value={item.institution[lang]} fieldPath={`education.${index}.institution.${lang}`} tag="span" />,
-              period: <Editable value={item.years} fieldPath={`education.${index}.years`} tag="span" />
+              title: <Editable value={item.degree[lang]} onSave={(newValue) => updateEducationItem({ ...item, degree: { ...item.degree, [lang]: newValue } })} tag="span" />,
+              subtitle: <Editable value={item.institution[lang]} onSave={(newValue) => updateEducationItem({ ...item, institution: { ...item.institution, [lang]: newValue } })} tag="span" />,
+              period: <Editable value={item.years} onSave={(newValue) => updateEducationItem({ ...item, years: newValue })} tag="span" />,
+              onDelete: () => deleteArrayItem('education', item)
             }))} />
+            {isAdmin && isEditing && (
+                <div className="mt-8 text-center">
+                  <button 
+                    onClick={() => setModalInfo({ path: 'education', type: 'education' })}
+                    className="bg-emerald-500 text-white font-bold py-2 px-4 rounded-md hover:bg-emerald-400 transition-colors duration-300 flex items-center gap-2 mx-auto"
+                  >
+                    <PlusIcon />
+                    {lang === 'ar' ? 'إضافة مؤهل تعليمي' : 'Add Education'}
+                  </button>
+                </div>
+              )}
           </Section>
         );
 
@@ -157,10 +178,10 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
         return (
           <Section title={translations.nav.skills[lang]} icon={<SparklesIcon />}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {data.skills.map((skill, index) => (
+              {data.skills.map((skill) => (
                 <div key={skill.id} className="relative group">
                   <SkillBar 
-                    name={<Editable value={skill.name[lang]} fieldPath={`skills.${index}.name.${lang}`} tag="span" />} 
+                    name={<Editable value={skill.name[lang]} onSave={(newValue) => updateSkill({ ...skill, name: { ...skill.name, [lang]: newValue } })} tag="span" />} 
                     level={skill.level} 
                   />
                    {isAdmin && isEditing && (
@@ -193,12 +214,12 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
         return (
           <Section title={translations.nav.volunteer[lang]} icon={<HeartIcon />}>
              <Timeline 
-                items={data.volunteerWork.map((item, index) => ({
+                items={data.volunteerWork.map((item) => ({
                     id: item.id,
-                    title: <Editable value={item.role[lang]} fieldPath={`volunteerWork.${index}.role.${lang}`} tag="span" />,
-                    subtitle: <Editable value={item.organization[lang]} fieldPath={`volunteerWork.${index}.organization.${lang}`} tag="span" />,
-                    period: <Editable value={item.years} fieldPath={`volunteerWork.${index}.years`} tag="span" />,
-                    description: <Editable value={item.description[lang]} fieldPath={`volunteerWork.${index}.description.${lang}`} tag="span" as="textarea" />,
+                    title: <Editable value={item.role[lang]} onSave={(newValue) => updateVolunteerWork({ ...item, role: { ...item.role, [lang]: newValue } })} tag="span" />,
+                    subtitle: <Editable value={item.organization[lang]} onSave={(newValue) => updateVolunteerWork({ ...item, organization: { ...item.organization, [lang]: newValue } })} tag="span" />,
+                    period: <Editable value={item.years} onSave={(newValue) => updateVolunteerWork({ ...item, years: newValue })} tag="span" />,
+                    description: <Editable value={item.description[lang]} onSave={(newValue) => updateVolunteerWork({ ...item, description: { ...item.description, [lang]: newValue } })} tag="span" as="textarea" />,
                     onDelete: () => deleteArrayItem('volunteerWork', item)
                 }))} 
               />
@@ -223,10 +244,10 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
               <TargetIcon /> {type === 'short' ? translations.shortTermGoals[lang] : translations.longTermGoals[lang]}
             </h3>
             <ul className="space-y-3">
-              {goals.map((goal, index) => (
+              {goals.map((goal) => (
                 <li key={goal.id} className="group flex items-start gap-3 p-3 bg-teal-800 rounded-md relative">
                   <CheckIcon className={`w-6 h-6 ${type === 'short' ? 'text-emerald-400' : 'text-cyan-400'} mt-1 flex-shrink-0`} />
-                  <Editable value={goal.text[lang]} fieldPath={`goals.${type}Term.${index}.text.${lang}`} tag="span" className="flex-grow" />
+                  <Editable value={goal.text[lang]} onSave={(newValue) => updateGoal({ ...goal, text: { ...goal.text, [lang]: newValue } })} tag="span" className="flex-grow" />
                   {isAdmin && isEditing && (
                     <button 
                       onClick={() => deleteArrayItem(`goals.${type}Term`, goal)}
@@ -319,12 +340,21 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
               <div className="lg:col-span-2">
                 <div className="space-y-8">
                   {data.evaluations.length > 0 ? (
-                    data.evaluations.map((evalItem, index) => (
-                      <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in">
-                        <Editable value={evalItem.comment[lang]} fieldPath={`evaluations.${index}.comment.${lang}`} as="textarea" tag="p" className="naskh-text text-xl font-bold text-cyan-200" style={{lineHeight: 1.8}} />
+                    data.evaluations.map((evalItem) => (
+                      <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in relative group">
+                        {isAdmin && isEditing && (
+                          <button 
+                            onClick={() => deleteArrayItem('evaluations', evalItem)}
+                            className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-10 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100"
+                            aria-label="Delete evaluation"
+                          >
+                            <XIcon className="w-4 h-4" />
+                          </button>
+                        )}
+                        <Editable value={evalItem.comment[lang]} onSave={(newValue) => updateEvaluation({ ...evalItem, comment: { ...evalItem.comment, [lang]: newValue } })} as="textarea" tag="p" className="naskh-text text-xl font-bold text-cyan-200" style={{lineHeight: 1.8}} />
                         <footer className="mt-4 text-right rtl:text-left">
-                          <Editable value={evalItem.author} fieldPath={`evaluations.${index}.author`} tag="p" className="naskh-text font-bold text-lg text-cyan-400" />
-                          <Editable value={evalItem.role[lang]} fieldPath={`evaluations.${index}.role.${lang}`} tag="p" className="naskh-text text-base text-cyan-300 font-normal" />
+                          <Editable value={evalItem.author} onSave={(newValue) => updateEvaluation({ ...evalItem, author: newValue })} tag="p" className="naskh-text font-bold text-lg text-cyan-400" />
+                          <Editable value={evalItem.role[lang]} onSave={(newValue) => updateEvaluation({ ...evalItem, role: { ...evalItem.role, [lang]: newValue } })} tag="p" className="naskh-text text-base text-cyan-300 font-normal" />
                         </footer>
                       </blockquote>
                     ))

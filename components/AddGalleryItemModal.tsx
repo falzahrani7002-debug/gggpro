@@ -62,18 +62,28 @@ const AddGalleryItemModal: React.FC<GalleryItemModalProps> = ({ onClose, itemToE
         fileUrl = await convertToBase64(file);
       }
 
-      const itemData: GalleryItem = {
+      // Dynamically build the object to avoid undefined fields
+      const itemData: Omit<GalleryItem, 'thumbnailUrl'> & { thumbnailUrl?: string } = {
         id: isEditMode ? itemToEdit.id : `gal-${Date.now()}`,
         title: { ar: title, en: title },
         description: { ar: description, en: description },
         year,
         type,
         url: fileUrl,
-        thumbnailUrl: type === 'video' && (file || isEditMode) ? 'https://picsum.photos/seed/newvideo/800/600' : undefined,
       };
+
+      if (type === 'video') {
+        // Preserve old thumbnail if editing a video without changing the file
+        if (isEditMode && !file && itemToEdit.type === 'video') {
+          itemData.thumbnailUrl = itemToEdit.thumbnailUrl;
+        } else {
+          // Assign a new placeholder thumbnail if it's a new video or the file is changed
+          itemData.thumbnailUrl = `https://picsum.photos/seed/newvideo${Date.now()}/800/600`;
+        }
+      }
       
       if (isEditMode) {
-        await updateGalleryItem(itemData);
+        await updateGalleryItem(itemData as GalleryItem);
       } else {
         await addArrayItem('gallery', itemData);
       }
