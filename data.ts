@@ -5,7 +5,7 @@ export const initialData: PortfolioData = {
     name: "فيصل فهد الزهراني",
     grade: { ar: "1 / 3 (الأول المتوسط)", en: "1 / 3 (First Intermediate)" },
     school: "مدارس الأندلس – المنار",
-    email: "f.alzahrani@gmail.com",
+    email: "f.alzahrani7002@gmail.com",
     about: {
       ar: "طالب طموح في الصف الأول المتوسط، شغوف بالمعرفة ومحب للاستكشاف. أسعى دائمًا لتطوير مهاراتي الأكاديمية والشخصية، مع تركيز خاص على الرياضيات التي أجد فيها متعة وتحديًا، وكرة القدم التي تعلمني أهمية العمل الجماعي والمثابرة. أؤمن بأن التعلم رحلة مستمرة لا تتوقف عند حدود الفصل الدراسي، وهذا الملف هو مرآة لجهودي وإنجازاتي، وقصة شغفي نحو تحقيق أهدافي. كل يوم هو فرصة جديدة لأكون أفضل من الأمس، وبالعزيمة والإصرار، لا يوجد شيء اسمه مستحيل.",
       en: "An ambitious first-intermediate grade student, passionate about knowledge and eager to explore. I am always striving to develop my academic and personal skills, with a special focus on mathematics, which I find both fun and challenging, and football, which teaches me the importance of teamwork and perseverance. I believe that learning is a continuous journey that doesn't stop at the classroom's borders, and this portfolio is a reflection of my efforts, my achievements, and the story of my passion towards achieving my goals. I believe that every day is a new opportunity to be better than I was yesterday, and with determination and persistence, nothing is impossible."
