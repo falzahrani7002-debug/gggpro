@@ -7,6 +7,7 @@ import MainContent from './components/MainContent';
 import Footer from './components/Footer';
 import AdminLoginModal from './components/AdminLoginModal';
 import WeatherEffects from './components/WeatherEffects';
+import GrowingPlant from './components/GrowingPlant'; // Import the new component
 import { db, storage } from './firebase-config';
 import { doc, setDoc, updateDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
@@ -17,6 +18,8 @@ export const AppContext = createContext<{
   isAdmin: boolean;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  fontSize: number;
+  setFontSize: (size: number) => void;
   data: PortfolioData | null;
   updateData: (path: string, value: any) => Promise<void>;
   addArrayItem: (path: string, item: any) => Promise<void>;
@@ -35,6 +38,7 @@ const App: React.FC = () => {
   const [lang, setLangState] = useState<Language>('ar');
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [fontSize, setFontSize] = useState<number>(100);
   const [activePage, setActivePage] = useState<Page>('about');
   const [data, setData] = useState<PortfolioData | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -216,13 +220,18 @@ const App: React.FC = () => {
 
   return (
     <AppContext.Provider value={{ 
-        lang, setLang, isAdmin, isEditing, setIsEditing, data, 
+        lang, setLang, isAdmin, isEditing, setIsEditing, fontSize, setFontSize, data, 
         updateData, addArrayItem, deleteArrayItem, deleteGalleryItem, updateGalleryItem,
         updateEducationItem, updateSkill, updateVolunteerWork, updateGoal, updateEvaluation,
         deleteCommunityAchievement
     }}>
-      <div className="bg-teal-900 min-h-screen text-cyan-200 relative">
+      <div 
+        className="bg-teal-900 min-h-screen text-cyan-200 relative transition-[font-size] duration-200"
+        style={{ fontSize: `${fontSize}%` }}
+      >
         <WeatherEffects />
+        <GrowingPlant progress={scrollProgress} />
+        
         <div 
           className="fixed top-0 left-0 h-1 bg-cyan-500 transition-all duration-300 z-50" 
           style={{ width: `${scrollProgress}%` }}

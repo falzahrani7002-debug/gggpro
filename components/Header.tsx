@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { AppContext } from '../App';
 import { translations } from '../data';
 import { Page, Language } from '../types';
-import { MenuIcon, XIcon } from './Icons';
+import { MenuIcon, XIcon, StarIcon } from './Icons';
 
 interface HeaderProps {
   activePage: Page;
@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   if (!context) return null;
-  const { lang, setLang, isAdmin, isEditing, setIsEditing } = context;
+  const { lang, setLang, isAdmin, isEditing, setIsEditing, fontSize, setFontSize } = context;
 
   const navLinks: { key: Page; label: string }[] = Object.keys(translations.nav).map((key) => ({
     key: key as Page,
@@ -32,6 +32,14 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
   const handleNavClick = (page: Page) => {
     setActivePage(page);
     setIsMenuOpen(false);
+  };
+
+  const increaseFontSize = () => {
+    setFontSize(Math.min(fontSize + 10, 150));
+  };
+
+  const decreaseFontSize = () => {
+    setFontSize(Math.max(fontSize - 10, 80));
   };
 
   return (
@@ -63,10 +71,30 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
             </div>
           </nav>
 
-          <div className="hidden md:flex items-center space-x-8 rtl:space-x-reverse">
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-8 rtl:space-x-reverse">
+            {/* Font Size Controls */}
+            <div className="flex items-center gap-1 bg-teal-900/50 border border-teal-600 rounded-md p-1">
+              <button 
+                onClick={decreaseFontSize} 
+                className="w-8 h-8 flex items-center justify-center text-cyan-300 hover:bg-cyan-500 hover:text-black rounded transition-colors text-xs font-bold"
+                title={lang === 'ar' ? 'تصغير الخط' : 'Decrease font size'}
+              >
+                A-
+              </button>
+              <div className="w-px h-4 bg-teal-700 mx-1"></div>
+              <button 
+                onClick={increaseFontSize} 
+                className="w-8 h-8 flex items-center justify-center text-cyan-300 hover:bg-cyan-500 hover:text-black rounded transition-colors text-lg font-bold"
+                title={lang === 'ar' ? 'تكبير الخط' : 'Increase font size'}
+              >
+                A+
+              </button>
+            </div>
+
             <button onClick={toggleLanguage} className="text-cyan-200 hover:text-white font-semibold py-2 px-3 border border-teal-600 rounded-md transition-colors duration-300 hover:bg-teal-700">
               {lang === 'ar' ? 'EN' : 'AR'}
             </button>
+            
             {isAdmin && (
               <div className="flex items-center gap-2 bg-teal-800 p-1 rounded-full border border-teal-600">
                 <span className={`px-2 text-xs font-bold transition-colors ${isEditing ? 'text-cyan-300' : 'text-gray-400'}`}>
@@ -121,6 +149,13 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, onAdminClick
               </a>
             ))}
              <div className="pt-4 pb-3 border-t border-teal-700 px-2 space-y-3">
+                <div className="flex items-center justify-between gap-2 bg-teal-800 p-2 rounded-md">
+                    <span className="text-base font-medium text-cyan-200">{lang === 'ar' ? 'حجم الخط' : 'Font Size'}</span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={decreaseFontSize} className="bg-teal-700 px-3 py-1 rounded text-cyan-200">-A</button>
+                      <button onClick={increaseFontSize} className="bg-teal-700 px-3 py-1 rounded text-cyan-200">+A</button>
+                    </div>
+                </div>
                 <button onClick={toggleLanguage} className="w-full text-cyan-200 hover:text-white font-semibold py-2 px-3 border border-teal-600 rounded-md transition-colors duration-300 hover:bg-teal-700">
                    {lang === 'ar' ? 'English' : 'العربية'}
                 </button>

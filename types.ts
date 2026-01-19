@@ -1,3 +1,4 @@
+
 export type Language = 'ar' | 'en';
 
 export type Page = 'about' | 'education' | 'skills' | 'volunteer' | 'goals' | 'gallery' | 'evaluations' | 'community' | 'entertainment';
@@ -58,6 +59,7 @@ export interface Evaluation {
   author: string;
   role: Translatable; // e.g., Teacher, Peer
   comment: Translatable;
+  reply?: Translatable; // Added reply field
 }
 
 export interface PortfolioData {

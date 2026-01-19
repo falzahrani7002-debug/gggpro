@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export const IconWrapper: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (
@@ -80,6 +81,9 @@ export const PencilIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 export const PlusIcon: React.FC<{ className?: string }> = ({ className }) => (
     <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></IconWrapper>
+);
+export const ReplyIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l5 5m-5-5l5-5" /></IconWrapper>
 );
 
 

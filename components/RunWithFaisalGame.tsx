@@ -45,10 +45,7 @@ const RunWithFaisalGame: React.FC = () => {
         });
 
         resizeObserver.observe(container);
-
-        // Set initial width
         setGameWidth(container.clientWidth);
-
         return () => resizeObserver.disconnect();
     }, []);
 
@@ -68,7 +65,6 @@ const RunWithFaisalGame: React.FC = () => {
         setObstacles([]);
         setScore(0);
         setStatus('running');
-        // Spawn first obstacle slightly delayed to give player time to react
         setTimeout(spawnObstacle, 500);
     };
 
@@ -94,7 +90,6 @@ const RunWithFaisalGame: React.FC = () => {
     const gameTick = useCallback(() => {
         if (status !== 'running') return;
 
-        // Faisal physics
         let newVelocityY = velocityY + GRAVITY;
         let newFaisalY = faisalY + newVelocityY;
         if (newFaisalY > GROUND_Y) {
@@ -104,7 +99,6 @@ const RunWithFaisalGame: React.FC = () => {
         setFaisalY(newFaisalY);
         setVelocityY(newVelocityY);
 
-        // Obstacle movement and collision
         let collision = false;
         const speed = Math.max(3, gameWidth / 160);
         const newObstacles = obstacles.map(obs => ({ ...obs, x: obs.x - (speed + (score / 200)) })).filter(obs => obs.x > -50);
@@ -138,7 +132,6 @@ const RunWithFaisalGame: React.FC = () => {
     useEffect(() => {
         if (status === 'running') {
             gameLoopRef.current = requestAnimationFrame(gameTick);
-            // Dynamic obstacle spawn rate based on screen width, making it feel more consistent
             const spawnInterval = Math.max(1200, gameWidth * 2.5);
             obstacleTimerRef.current = setInterval(spawnObstacle, spawnInterval);
         } else {
@@ -152,11 +145,11 @@ const RunWithFaisalGame: React.FC = () => {
     }, [status, gameTick, spawnObstacle, gameWidth]);
 
     return (
-        <div className="bg-teal-800 p-4 md:p-6 rounded-lg border border-teal-700">
-            <h3 className="text-2xl md:text-3xl font-bold text-center text-cyan-300 mb-4">{translations.runWithFaisalTitle[lang]}</h3>
+        <div className="bg-cyan-900/30 p-4 md:p-8 rounded-lg border-2 border-cyan-500/40 shadow-xl shadow-cyan-900/20">
+            <h3 className="text-2xl md:text-3xl font-black text-center text-cyan-400 mb-6 drop-shadow-md uppercase tracking-wider">{translations.runWithFaisalTitle[lang]}</h3>
             <div
                 ref={gameContainerRef}
-                className="relative bg-teal-900 rounded-md overflow-hidden border-2 border-teal-600 w-full max-w-[800px] mx-auto touch-manipulation cursor-pointer"
+                className="relative bg-cyan-950 rounded-xl overflow-hidden border-2 border-cyan-400/50 w-full max-w-[800px] mx-auto touch-manipulation cursor-pointer shadow-inner"
                 style={{ height: `${GAME_HEIGHT}px` }}
                 onClick={jump}
                 role="button"
@@ -164,11 +157,11 @@ const RunWithFaisalGame: React.FC = () => {
                 onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') jump(); }}
                 aria-label={translations.runWithFaisalTitle[lang]}
             >
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-cyan-400"></div>
-                <div className="absolute bottom-1 right-4 text-cyan-400 font-black text-xl md:text-2xl opacity-20 select-none">{translations.myPathToSuccess[lang]}</div>
+                <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-600 via-sky-400 to-cyan-600"></div>
+                <div className="absolute bottom-2 right-4 text-cyan-400 font-black text-xl md:text-2xl opacity-10 select-none italic">{translations.myPathToSuccess[lang]}</div>
                 
                 {/* Faisal Character */}
-                <div style={{ 
+                <div className="shadow-lg shadow-cyan-500/20" style={{ 
                     position: 'absolute', 
                     left: 50, 
                     bottom: GAME_HEIGHT - faisalY - FAISAL_HEIGHT,
@@ -176,7 +169,8 @@ const RunWithFaisalGame: React.FC = () => {
                     height: FAISAL_HEIGHT,
                     backgroundImage: `url('https://picsum.photos/seed/faisal-char/40/60')`,
                     backgroundSize: 'cover',
-                    borderRadius: '5px'
+                    borderRadius: '8px',
+                    border: '2px solid rgba(34, 211, 238, 0.5)'
                 }}></div>
 
                 {/* Obstacles */}
@@ -189,7 +183,8 @@ const RunWithFaisalGame: React.FC = () => {
                             bottom: 0,
                             width: obsType.width, 
                             height: obsType.height,
-                            color: '#fbbf24',
+                            color: '#22d3ee', // Cyan-400
+                            filter: 'drop-shadow(0 0 5px rgba(34, 211, 238, 0.8))'
                         }}>
                           {obsType.component}
                         </div>
@@ -198,27 +193,27 @@ const RunWithFaisalGame: React.FC = () => {
 
                 {/* UI Overlays */}
                 {status !== 'running' && (
-                    <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white z-10 p-4">
+                    <div className="absolute inset-0 bg-cyan-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-white z-10 p-4">
                         {status === 'idle' && (
                             <>
-                                <p className="text-lg md:text-xl mb-4 text-center">{translations.runWithFaisalInstructions[lang]}</p>
-                                <button onClick={startGame} className="bg-cyan-500 text-black font-bold py-3 px-8 rounded-md text-lg hover:bg-cyan-400 transition-colors">
-                                    {lang === 'ar' ? 'ابدأ' : 'Start'}
+                                <p className="text-lg md:text-xl mb-6 text-center font-bold text-cyan-200">{translations.runWithFaisalInstructions[lang]}</p>
+                                <button onClick={startGame} className="bg-cyan-500 text-black font-black py-3 px-10 rounded-full text-lg hover:bg-cyan-400 hover:scale-110 transition-all shadow-lg shadow-cyan-500/50">
+                                    {lang === 'ar' ? 'انطلق!' : 'Start!'}
                                 </button>
                             </>
                         )}
                         {status === 'over' && (
                             <>
-                                <h4 className="text-3xl md:text-4xl font-bold text-red-500">{translations.gameOver[lang]}</h4>
-                                <p className="text-xl md:text-2xl mt-2">{translations.score[lang]}: {Math.floor(score/10)}</p>
-                                <button onClick={startGame} className="mt-6 bg-cyan-500 text-black font-bold py-3 px-8 rounded-md text-lg hover:bg-cyan-400 transition-colors">
+                                <h4 className="text-4xl md:text-5xl font-black text-red-500 drop-shadow-md mb-2">{translations.gameOver[lang]}</h4>
+                                <p className="text-2xl md:text-3xl mt-2 font-bold text-cyan-100">{translations.score[lang]}: {Math.floor(score/10)}</p>
+                                <button onClick={startGame} className="mt-8 bg-white text-cyan-900 font-black py-3 px-10 rounded-full text-lg hover:bg-cyan-100 transition-all shadow-xl">
                                     {translations.playAgain[lang]}
                                 </button>
                             </>
                         )}
                     </div>
                 )}
-                 <div className="absolute top-2 right-2 text-lg md:text-xl font-bold text-white z-20">
+                 <div className="absolute top-4 right-4 text-xl md:text-2xl font-black text-cyan-100 z-20 bg-cyan-900/50 px-4 py-1 rounded-full border border-cyan-400/30">
                     {translations.score[lang]}: {status === 'running' ? Math.floor(score / 10) : 0}
                 </div>
             </div>

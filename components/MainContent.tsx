@@ -6,7 +6,7 @@ import { translations } from '../data';
 import Section from './Section';
 import {
   UserIcon, EducationIcon, SparklesIcon, HeartIcon, RocketIcon,
-  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon, XIcon, PlusIcon, PencilIcon
+  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon, XIcon, PlusIcon, PencilIcon, ReplyIcon
 } from './Icons';
 import Gallery from './Gallery';
 import Editable from './Editable';
@@ -341,21 +341,65 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                 <div className="space-y-8">
                   {data.evaluations.length > 0 ? (
                     data.evaluations.map((evalItem) => (
-                      <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in relative group">
-                        {isAdmin && isEditing && (
-                          <button 
-                            onClick={() => deleteArrayItem('evaluations', evalItem)}
-                            className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-10 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100"
-                            aria-label="Delete evaluation"
-                          >
-                            <XIcon className="w-4 h-4" />
-                          </button>
-                        )}
-                        <Editable value={evalItem.comment[lang]} onSave={(newValue) => updateEvaluation({ ...evalItem, comment: { ...evalItem.comment, [lang]: newValue } })} as="textarea" tag="p" className="naskh-text text-xl font-bold text-cyan-200" style={{lineHeight: 1.8}} />
+                      <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in relative group overflow-hidden">
+                        {/* Control Buttons */}
+                        <div className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                           {isAdmin && isEditing && (
+                            <button 
+                              onClick={() => {
+                                // Initialize empty reply if it doesn't exist to trigger Editable
+                                if (!evalItem.reply) {
+                                  updateEvaluation({ ...evalItem, reply: { ar: '', en: '' } });
+                                }
+                              }}
+                              className="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition-all"
+                              title={lang === 'ar' ? 'أضف رداً' : 'Add a reply'}
+                            >
+                              <ReplyIcon className="w-4 h-4" />
+                            </button>
+                          )}
+                          {isAdmin && isEditing && (
+                            <button 
+                              onClick={() => deleteArrayItem('evaluations', evalItem)}
+                              className="w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-all"
+                              aria-label="Delete evaluation"
+                            >
+                              <XIcon className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                        
+                        <Editable 
+                          value={evalItem.comment[lang]} 
+                          onSave={(newValue) => updateEvaluation({ ...evalItem, comment: { ...evalItem.comment, [lang]: newValue } })} 
+                          as="textarea" 
+                          tag="p" 
+                          className="naskh-text text-xl font-bold text-cyan-200" 
+                          style={{lineHeight: 1.8}} 
+                        />
                         <footer className="mt-4 text-right rtl:text-left">
                           <Editable value={evalItem.author} onSave={(newValue) => updateEvaluation({ ...evalItem, author: newValue })} tag="p" className="naskh-text font-bold text-lg text-cyan-400" />
                           <Editable value={evalItem.role[lang]} onSave={(newValue) => updateEvaluation({ ...evalItem, role: { ...evalItem.role, [lang]: newValue } })} tag="p" className="naskh-text text-base text-cyan-300 font-normal" />
                         </footer>
+
+                        {/* Reply Section */}
+                        {(evalItem.reply?.[lang] || (isAdmin && isEditing && evalItem.reply)) && (
+                          <div className="mt-6 pt-4 border-t border-teal-700 bg-teal-900/30 p-4 rounded-md">
+                            <div className="flex items-center gap-2 mb-2">
+                              <ReplyIcon className="w-4 h-4 text-amber-400 transform rotate-180 rtl:rotate-0" />
+                              <span className="text-amber-400 font-bold text-sm">
+                                {lang === 'ar' ? `رد ${data.studentInfo.name}:` : `${data.studentInfo.name}'s Reply:`}
+                              </span>
+                            </div>
+                            <Editable 
+                              value={evalItem.reply?.[lang] || ''} 
+                              onSave={(newValue) => updateEvaluation({ ...evalItem, reply: { ...(evalItem.reply || { ar: '', en: '' }), [lang]: newValue } })} 
+                              as="textarea" 
+                              tag="p" 
+                              className="text-lg text-cyan-100 italic ruqaa-text"
+                            />
+                          </div>
+                        )}
                       </blockquote>
                     ))
                   ) : (

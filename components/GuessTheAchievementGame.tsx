@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import { AppContext } from '../App';
 import GiftFallEffect from './GiftFallEffect';
@@ -17,7 +18,7 @@ const GuessTheAchievementGame: React.FC = () => {
     const [scrambled, setScrambled] = useState('');
     const [guess, setGuess] = useState('');
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' | '' }>({ text: '', type: '' });
-    const [showGiftFall, setShowGiftFall] = useState(false);
+    const [showGiftFall] = useState(false);
 
     const scrambleText = (text: string): string => {
         return text.split(' ').map(word => 
@@ -43,23 +44,18 @@ const GuessTheAchievementGame: React.FC = () => {
         e.preventDefault();
         if (guess.trim().toLowerCase() === currentAchievement.toLowerCase()) {
             setMessage({ text: lang === 'ar' ? 'إجابة صحيحة! أحسنت.' : 'Correct! Well done.', type: 'success' });
-            setShowGiftFall(true);
-            setTimeout(() => {
-                setShowGiftFall(false);
-            }, 5000);
         } else {
             setMessage({ text: lang === 'ar' ? 'إجابة خاطئة. حاول مرة أخرى!' : 'Incorrect guess. Try again!', type: 'error' });
         }
     };
 
     return (
-        <div className="bg-teal-800 p-8 rounded-lg border border-teal-700 text-center max-w-3xl mx-auto relative overflow-hidden">
-            <GiftFallEffect isActive={showGiftFall} />
-            <h3 className="text-2xl font-bold text-cyan-300 mb-4">
-                {lang === 'ar' ? 'حاول تخمين الإنجاز بناءً على الحروف المبعثرة' : 'Guess the achievement from the scrambled letters'}
+        <div className="bg-red-950/40 p-8 rounded-lg border-2 border-red-700/50 text-center max-w-3xl mx-auto relative overflow-hidden shadow-lg shadow-red-900/20">
+            <h3 className="text-2xl font-bold text-red-400 mb-4 drop-shadow-sm">
+                {lang === 'ar' ? 'تخمين الإنجاز الحروف المبعثرة' : 'Guess the achievement from the scrambled letters'}
             </h3>
             
-            <p className="text-3xl font-bold text-white tracking-widest my-8 p-4 bg-teal-900 rounded-md select-none">
+            <p className="text-2xl md:text-3xl font-bold text-white tracking-widest my-8 p-6 bg-red-900/60 rounded-xl select-none border border-red-800 shadow-inner">
                 {scrambled}
             </p>
 
@@ -69,12 +65,12 @@ const GuessTheAchievementGame: React.FC = () => {
                     value={guess}
                     onChange={(e) => setGuess(e.target.value)}
                     placeholder={lang === 'ar' ? 'اكتب تخمينك هنا...' : 'Type your guess here...'}
-                    className="flex-grow bg-teal-900 rounded-md border-2 border-teal-600 focus:border-cyan-500 focus:ring-cyan-500 px-4 py-3 diwani-input"
+                    className="flex-grow bg-red-950 border-2 border-red-800 focus:border-red-500 focus:ring-red-500 px-4 py-3 rounded-md text-red-100 placeholder-red-700"
                     disabled={message.type === 'success'}
                 />
                 <button
                     type="submit"
-                    className="bg-cyan-500 text-black font-bold py-3 px-6 rounded-md hover:bg-cyan-400 transition-colors duration-300 disabled:bg-gray-500"
+                    className="bg-red-600 text-white font-bold py-3 px-8 rounded-md hover:bg-red-500 transition-all duration-300 shadow-lg shadow-red-900/40 disabled:bg-gray-700"
                     disabled={message.type === 'success'}
                 >
                     {lang === 'ar' ? 'خمن' : 'Guess'}
@@ -82,14 +78,14 @@ const GuessTheAchievementGame: React.FC = () => {
             </form>
 
             {message.text && (
-                <p className={`mt-4 text-lg font-semibold ${message.type === 'success' ? 'text-emerald-400' : 'text-red-400'}`}>
+                <p className={`mt-6 text-xl font-bold ${message.type === 'success' ? 'text-green-400 animate-bounce' : 'text-red-400 animate-pulse'}`}>
                     {message.text}
                 </p>
             )}
 
             <button
                 onClick={setupNewChallenge}
-                className="mt-6 bg-cyan-600 text-white font-bold py-3 px-6 rounded-md hover:bg-cyan-500 transition-colors duration-300"
+                className="mt-8 text-red-300 hover:text-red-100 font-bold underline transition-colors"
             >
                 {lang === 'ar' ? 'تحدي جديد' : 'New Challenge'}
             </button>
