@@ -59,7 +59,6 @@ export interface Evaluation {
   author: string;
   role: Translatable; // e.g., Teacher, Peer
   comment: Translatable;
-  reply?: Translatable; // Added reply field
 }
 
 export interface PortfolioData {

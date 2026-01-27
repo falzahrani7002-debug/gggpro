@@ -85,6 +85,9 @@ export const PlusIcon: React.FC<{ className?: string }> = ({ className }) => (
 export const ReplyIcon: React.FC<{ className?: string }> = ({ className }) => (
   <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l5 5m-5-5l5-5" /></IconWrapper>
 );
+export const ExternalLinkIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <IconWrapper className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></IconWrapper>
+);
 
 
 // Hobby Icons

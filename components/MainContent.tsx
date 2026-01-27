@@ -6,7 +6,7 @@ import { translations } from '../data';
 import Section from './Section';
 import {
   UserIcon, EducationIcon, SparklesIcon, HeartIcon, RocketIcon,
-  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon, XIcon, PlusIcon, PencilIcon, ReplyIcon
+  GalleryIcon, StarIcon, CheckIcon, TargetIcon, CommunityIcon, GameControllerIcon, XIcon, PlusIcon, PencilIcon, ExternalLinkIcon
 } from './Icons';
 import Gallery from './Gallery';
 import Editable from './Editable';
@@ -144,6 +144,31 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                       as="textarea"
                       className="mt-4 text-cyan-200 ruqaa-text"
                     />
+                  
+                  {/* New Project Link Section */}
+                  <div className="mt-8 flex flex-col md:flex-row gap-4 items-center">
+                    <a 
+                      href="https://faisal-alzahrani.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group relative flex items-center gap-3 bg-amber-500/10 border-2 border-amber-500/30 hover:border-amber-500 p-4 rounded-xl transition-all duration-300 shadow-lg shadow-amber-500/5 overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-amber-500/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                      <div className="relative z-10 p-2 bg-amber-500 rounded-lg text-amber-950">
+                        <RocketIcon className="w-6 h-6" />
+                      </div>
+                      <div className="relative z-10 flex flex-col items-start">
+                        <span className="text-amber-400 font-black text-lg group-hover:text-amber-300 transition-colors">
+                          {lang === 'ar' ? 'موقع مساعدي السكري من تصميمي' : 'Diabetes Assistant website, designed by me'}
+                        </span>
+                        <div className="flex items-center gap-1 text-amber-200/60 text-xs">
+                          <span>faisal-alzahrani.vercel.app</span>
+                          <ExternalLinkIcon className="w-3 h-3" />
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -263,7 +288,7 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
             {isAdmin && isEditing && (
               <button 
                 onClick={() => setModalInfo({ path: `goals.${type}Term`, type: 'goal', goalType: type })}
-                className="mt-4 bg-emerald-500/50 text-white text-sm font-bold py-1 px-3 rounded-md hover:bg-emerald-500/80 transition-colors duration-300 flex items-center gap-1"
+                className="mt-4 bg-emerald-500/50 text-white text-sm font-bold py-1 px-3 rounded-md hover:bg-emerald-400/80 transition-colors duration-300 flex items-center gap-1"
               >
                 <PlusIcon className="w-4 h-4" />
                 {lang === 'ar' ? 'إضافة هدف' : 'Add Goal'}
@@ -344,20 +369,6 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                       <blockquote key={evalItem.id} className="bg-teal-800 p-6 rounded-lg border-l-4 border-cyan-500 rtl:border-l-0 rtl:border-r-4 animate-fade-in relative group overflow-hidden">
                         {/* Control Buttons */}
                         <div className="absolute top-2 right-2 rtl:right-auto rtl:left-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                           {isAdmin && isEditing && (
-                            <button 
-                              onClick={() => {
-                                // Initialize empty reply if it doesn't exist to trigger Editable
-                                if (!evalItem.reply) {
-                                  updateEvaluation({ ...evalItem, reply: { ar: '', en: '' } });
-                                }
-                              }}
-                              className="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition-all"
-                              title={lang === 'ar' ? 'أضف رداً' : 'Add a reply'}
-                            >
-                              <ReplyIcon className="w-4 h-4" />
-                            </button>
-                          )}
                           {isAdmin && isEditing && (
                             <button 
                               onClick={() => deleteArrayItem('evaluations', evalItem)}
@@ -381,25 +392,6 @@ const MainContent: React.FC<{ page: Page }> = ({ page }) => {
                           <Editable value={evalItem.author} onSave={(newValue) => updateEvaluation({ ...evalItem, author: newValue })} tag="p" className="naskh-text font-bold text-lg text-cyan-400" />
                           <Editable value={evalItem.role[lang]} onSave={(newValue) => updateEvaluation({ ...evalItem, role: { ...evalItem.role, [lang]: newValue } })} tag="p" className="naskh-text text-base text-cyan-300 font-normal" />
                         </footer>
-
-                        {/* Reply Section */}
-                        {(evalItem.reply?.[lang] || (isAdmin && isEditing && evalItem.reply)) && (
-                          <div className="mt-6 pt-4 border-t border-teal-700 bg-teal-900/30 p-4 rounded-md">
-                            <div className="flex items-center gap-2 mb-2">
-                              <ReplyIcon className="w-4 h-4 text-amber-400 transform rotate-180 rtl:rotate-0" />
-                              <span className="text-amber-400 font-bold text-sm">
-                                {lang === 'ar' ? `رد ${data.studentInfo.name}:` : `${data.studentInfo.name}'s Reply:`}
-                              </span>
-                            </div>
-                            <Editable 
-                              value={evalItem.reply?.[lang] || ''} 
-                              onSave={(newValue) => updateEvaluation({ ...evalItem, reply: { ...(evalItem.reply || { ar: '', en: '' }), [lang]: newValue } })} 
-                              as="textarea" 
-                              tag="p" 
-                              className="text-lg text-cyan-100 italic ruqaa-text"
-                            />
-                          </div>
-                        )}
                       </blockquote>
                     ))
                   ) : (
